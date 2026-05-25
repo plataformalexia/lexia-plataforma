@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lexia</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#1c2a1e;--bg:#f0f4f1;--surface:#fff;--s2:#f5f7f5;
+  --bd:#dde6de;--bd2:#c8d6c9;
+  --tx:#1c2a1e;--t2:#4a6350;--t3:#8aa490;
+  --grn:#2d7a3a;--grn2:#3a9447;--grn-l:#eaf4ec;
+  --gold:#b07d1a;--gold-l:#fdf6e3;
+  --red:#c0392b;--red-l:#fdf0ee;
+  --blue:#1a5fa8;--blue-l:#e8f0fb;
+  --pur:#6b46b0;--pur-l:#f3eeff;
+  --ora:#c25a00;--ora-l:#fff3ea;
+  --r:12px;--rs:8px;
+  --font:'Segoe UI',system-ui,sans-serif;
+  --sidebar:220px;
+}
+html,body{height:100%;overflow:hidden;font-family:var(--font);background:var(--bg);color:var(--tx)}
+body{display:flex;flex-direction:column}
+#login-screen{position:fixed;inset:0;z-index:1000;background:linear-gradient(135deg,#e8ede9,#f2f6f2 60%,#e0ebe1);display:flex;align-items:center;justify-content:center}
+.login-card{background:#fff;border-radius:20px;box-shadow:0 8px 40px rgba(28,42,30,.13);width:420px;max-width:94vw;overflow:hidden}
+.login-header{background:linear-gradient(160deg,#1c2a1e 60%,#2d4a32);padding:2.2rem 2rem 1.6rem;display:flex;flex-direction:column;align-items:center;gap:.6rem}
+.login-logo-row{display:flex;align-items:center;gap:10px}
+.login-logo-ico{width:42px;height:42px;background:rgba(255,255,255,.15);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;border:1.5px solid rgba(255,255,255,.25)}
+.login-logo-name{font-size:1.55rem;font-weight:800;color:#fff}
+.login-logo-name span{color:#7dcf8a}
+.login-sub{font-size:.72rem;color:rgba(255,255,255,.55);letter-spacing:.06em;text-transform:uppercase}
+.login-body{padding:1.8rem 2rem 2rem}
+.login-google{width:100%;display:flex;align-items:center;justify-content:center;gap:.7rem;background:#fff;border:1.5px solid var(--bd2);border-radius:var(--rs);padding:.65rem 1rem;font-size:.86rem;font-weight:500;color:var(--tx);cursor:pointer;transition:all .15s;font-family:var(--font);margin-bottom:1.1rem}
+.login-google:hover{border-color:var(--grn)}
+.login-divider{display:flex;align-items:center;gap:.75rem;margin-bottom:1.1rem}
+.login-divider span{font-size:.75rem;color:var(--t3)}
+.login-divider::before,.login-divider::after{content:'';flex:1;height:1px;background:var(--bd)}
+.finput{width:100%;padding:.55rem .8rem;border:1.5px solid var(--bd);border-radius:var(--rs);font-size:.85rem;font-family:var(--font);color:var(--tx);background:#fff;outline:none;transition:border-color .15s;margin-bottom:.7rem}
+.finput:focus{border-color:var(--grn)}
+.finput::placeholder{color:var(--t3)}
+.login-btn{width:100%;padding:.6rem;background:var(--grn);color:#fff;border:none;border-radius:var(--rs);font-size:.88rem;font-weight:600;font-family:var(--font);cursor:pointer;margin-top:.4rem}
+.login-hint{font-size:.75rem;color:var(--t3);text-align:center;margin-top:.9rem}
+.login-hint a{color:var(--grn);text-decoration:none;cursor:pointer}
+.login-tabs{display:flex;border-bottom:1px solid var(--bd);margin-bottom:1.2rem}
+.login-tab{flex:1;padding:.55rem;font-size:.82rem;font-weight:600;color:var(--t2);background:none;border:none;cursor:pointer;font-family:var(--font);border-bottom:2.5px solid transparent;margin-bottom:-1px}
+.login-tab.on{color:var(--grn);border-bottom-color:var(--grn)}
+.login-err{background:var(--red-l);color:var(--red);border-radius:var(--rs);padding:.5rem .75rem;font-size:.78rem;margin-bottom:.75rem;display:none}
+#app-screen{display:none;flex:1;overflow:hidden;flex-direction:column}
+.topbar{height:52px;background:var(--surface);border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;padding:0 1rem 0 0;flex-shrink:0;z-index:50}
+.tb-left{display:flex;align-items:center;height:100%}
+.tb-logo-wrap{width:var(--sidebar);height:100%;background:var(--navy);display:flex;align-items:center;gap:8px;padding:0 1.1rem;flex-shrink:0}
+.tb-logo-name{font-size:1.05rem;font-weight:800;color:#fff}
+.tb-logo-name span{color:#7dcf8a}
+.tb-breadcrumb{font-size:.82rem;color:var(--t2);margin-left:1.25rem;font-weight:500}
+.tb-right{display:flex;align-items:center;gap:.5rem}
+.tb-uinfo{display:flex;flex-direction:column;align-items:flex-end}
+.tb-uname{font-size:.78rem;font-weight:600}
+.tb-urole{font-size:.7rem;color:var(--t3)}
+.tb-avatar{width:32px;height:32px;border-radius:50%;background:var(--grn);color:#fff;font-size:.8rem;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.app-body{display:flex;flex:1;overflow:hidden}
+.sidebar{width:var(--sidebar);background:var(--navy);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto;padding:.75rem 0}
+.sb-section-label{font-size:.65rem;font-weight:700;color:rgba(255,255,255,.3);letter-spacing:.08em;text-transform:uppercase;padding:.75rem 1.1rem .3rem;margin-top:.3rem}
+.sb-item{display:flex;align-items:center;gap:.6rem;padding:.52rem 1.1rem;font-size:.82rem;font-weight:500;color:rgba(255,255,255,.6);cursor:pointer;border-left:3px solid transparent;margin:1px 0;transition:all .15s}
+.sb-item:hover{background:rgba(255,255,255,.06);color:rgba(255,255,255,.85)}
+.sb-item.on{background:rgba(125,207,138,.12);color:#7dcf8a;border-left-color:#7dcf8a}
+.sb-ico{font-size:.95rem;width:18px;text-align:center;flex-shrink:0}
+.sb-badge{margin-left:auto;background:rgba(255,255,255,.15);color:rgba(255,255,255,.7);font-size:.65rem;font-weight:700;padding:.1rem .4rem;border-radius:99px}
+.sb-badge.new{background:var(--red);color:#fff}
+.sb-spacer{flex:1}
+.sb-logout{display:flex;align-items:center;gap:.6rem;padding:.52rem 1.1rem;font-size:.78rem;color:rgba(255,255,255,.4);cursor:pointer}
+.sb-logout:hover{color:rgba(255,255,255,.7)}
+.main-content{flex:1;overflow-y:auto;padding:1.5rem}
+.panel{display:none}
+.panel.on{display:block}
+.page-title{font-size:1.15rem;font-weight:700;color:var(--tx);margin-bottom:1.25rem}
+.card{background:var(--surface);border-radius:var(--r);border:1px solid var(--bd);padding:1.1rem 1.25rem;margin-bottom:1rem}
+.card-title{font-size:.88rem;font-weight:700;color:var(--tx);margin-bottom:.75rem}
+.card-sub{font-size:.73rem;color:var(--t3);margin-top:-.5rem;margin-bottom:.75rem}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem}
+.stat-card{background:var(--surface);border-radius:var(--r);border:1px solid var(--bd);padding:1rem;display:flex;flex-direction:column;gap:.25rem}
+.stat-val{font-size:1.7rem;font-weight:800;color:var(--tx)}
+.stat-lbl{font-size:.75rem;color:var(--t2);font-weight:500}
+.stat-ico{font-size:1.5rem;margin-bottom:.2rem}
+.btn{display:inline-flex;align-items:center;gap:.4rem;padding:.45rem .85rem;border-radius:var(--rs);font-size:.8rem;font-weight:600;cursor:pointer;font-family:var(--font);border:none;transition:all .15s}
+.btn-primary{background:var(--grn);color:#fff}.btn-primary:hover{background:var(--grn2)}
+.btn-outline{background:#fff;color:var(--tx);border:1.5px solid var(--bd2)}.btn-outline:hover{border-color:var(--grn);color:var(--grn)}
+.btn-ghost{background:none;color:var(--t2)}.btn-ghost:hover{background:var(--s2)}
+.btn-gold{background:var(--gold-l);color:var(--gold)}.btn-gold:hover{background:var(--gold);color:#fff}
+.btn-danger{background:var(--red-l);color:var(--red);border:1.5px solid #f0bab4}.btn-danger:hover{background:var(--red);color:#fff}
+.btn-sm{padding:.3rem .65rem;font-size:.75rem}
+.tag{display:inline-flex;align-items:center;padding:.18rem .55rem;border-radius:99px;font-size:.7rem;font-weight:600}
+.tag-grn{background:var(--grn-l);color:var(--grn)}
+.tag-red{background:var(--red-l);color:var(--red)}
+.tag-gold{background:var(--gold-l);color:var(--gold)}
+.tag-blue{background:var(--blue-l);color:var(--blue)}
+.tag-pur{background:var(--pur-l);color:var(--pur)}
+.tag-gray{background:var(--s2);color:var(--t2)}
+.tag-ora{background:var(--ora-l);color:var(--ora)}
+.section-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem}
+.section-hdr h3{font-size:.9rem;font-weight:700}
+table{width:100%;border-collapse:collapse;font-size:.8rem}
+th{text-align:left;font-size:.72rem;font-weight:700;color:var(--t3);border-bottom:1px solid var(--bd);padding:.5rem .6rem;text-transform:uppercase;letter-spacing:.04em}
+td{padding:.6rem .6rem;border-bottom:1px solid var(--bd);color:var(--tx);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--s2)}
+.progress-bar-wrap{background:var(--bd);border-radius:99px;height:7px;overflow:hidden}
+.progress-bar{background:var(--grn);border-radius:99px;height:100%;transition:width .4s}
+.progress-bar.gold{background:var(--gold)}
+.progress-bar.blue{background:var(--blue)}
+.progress-bar.pur{background:var(--pur)}
+.progress-bar.red{background:var(--red)}
+.chat-wrap{display:flex;flex-direction:column;gap:.65rem;max-height:320px;overflow-y:auto;padding:.5rem 0}
+.chat-msg{display:flex;flex-direction:column;gap:.2rem;max-width:80%}
+.chat-msg.user{align-self:flex-end;align-items:flex-end}
+.chat-msg.ai{align-self:flex-start}
+.chat-bubble{padding:.6rem .9rem;border-radius:14px;font-size:.8rem;line-height:1.55}
+.chat-msg.user .chat-bubble{background:var(--grn);color:#fff;border-radius:14px 14px 4px 14px}
+.chat-msg.ai .chat-bubble{background:var(--s2);color:var(--tx);border:1px solid var(--bd);border-radius:14px 14px 14px 4px}
+.chat-time{font-size:.68rem;color:var(--t3)}
+.chat-input-row{display:flex;gap:.5rem;margin-top:.75rem}
+.chat-input-row input{flex:1;padding:.5rem .75rem;border:1.5px solid var(--bd);border-radius:var(--rs);font-size:.82rem;font-family:var(--font);outline:none;color:var(--tx);background:#fff}
+.chat-input-row input:focus{border-color:var(--grn)}
+.chat-input-row button{background:var(--grn);color:#fff;border:none;border-radius:var(--rs);padding:.5rem .85rem;font-size:.8rem;font-weight:600;cursor:pointer;font-family:var(--font)}
+.peca-card{background:var(--surface);border:1px solid var(--bd);border-radius:var(--r);padding:1rem;margin-bottom:.75rem;display:flex;align-items:center;gap:.75rem;cursor:pointer;transition:border-color .15s}
+.peca-card:hover{border-color:var(--grn)}
+.peca-icon{width:40px;height:40px;border-radius:var(--rs);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0}
+.peca-info h4{font-size:.85rem;font-weight:700;color:var(--tx);margin-bottom:.2rem}
+.peca-info p{font-size:.75rem;color:var(--t2)}
+.juris-item{border-left:3px solid var(--grn);padding:.6rem .8rem;background:var(--s2);border-radius:0 var(--rs) var(--rs) 0;margin-bottom:.6rem}
+.juris-item h5{font-size:.8rem;font-weight:700;color:var(--tx);margin-bottom:.2rem}
+.juris-item p{font-size:.75rem;color:var(--t2);line-height:1.4}
+.xl-textarea{width:100%;padding:.7rem .85rem;border:1.5px solid var(--bd);border-radius:var(--rs);font-size:.82rem;font-family:var(--font);color:var(--tx);background:#fff;outline:none;resize:vertical;min-height:100px;line-height:1.55}
+.xl-textarea:focus{border-color:var(--grn)}
+.form-row{display:flex;flex-direction:column;gap:.3rem;margin-bottom:.85rem}
+.form-label{font-size:.75rem;font-weight:700;color:var(--tx)}
+.form-select,.form-input{width:100%;padding:.5rem .75rem;border:1.5px solid var(--bd);border-radius:var(--rs);font-size:.82rem;font-family:var(--font);color:var(--tx);background:#fff;outline:none}
+.form-select:focus,.form-input:focus{border-color:var(--grn)}
+.ai-result{background:var(--grn-l);border:1px solid var(--bd2);border-radius:var(--r);padding:1rem;margin-top:.75rem;font-size:.82rem;line-height:1.7;color:var(--tx);white-space:pre-wrap;display:none}
+.ai-loading{display:none;align-items:center;gap:.5rem;font-size:.8rem;color:var(--t2);padding:.5rem 0}
+.ai-loading .dot{width:6px;height:6px;border-radius:50%;background:var(--grn);animation:pulse 1.2s infinite}
+.ai-loading .dot:nth-child(2){animation-delay:.2s}
+.ai-loading .dot:nth-child(3){animation-delay:.4s}
+@keyframes pulse{0%,80%,100%{opacity:.3}40%{opacity:1}}
+.flash-card{background:var(--surface);border:1px solid var(--bd);border-radius:var(--r);padding:1.1rem;cursor:pointer;transition:border-color .2s;user-select:none}
+.flash-card:hover{border-color:var(--grn)}
+.flash-card .fc-q{font-size:.85rem;font-weight:600;color:var(--tx);margin-bottom:.5rem}
+.flash-card .fc-a{font-size:.8rem;color:var(--t2);display:none;border-top:1px solid var(--bd);padding-top:.5rem;margin-top:.5rem;line-height:1.55}
+.flash-card.revealed .fc-a{display:block}
+.flash-card .fc-hint{font-size:.7rem;color:var(--t3);margin-top:.4rem}
+.area-chip{padding:.35rem .75rem;border-radius:99px;font-size:.75rem;font-weight:600;cursor:pointer;border:1.5px solid var(--bd);background:#fff;color:var(--t2);transition:all .15s}
+.area-chip.on{background:var(--grn);color:#fff;border-color:var(--grn)}
+.timeline{display:flex;flex-direction:column}
+.tl-item{display:flex;gap:1rem}
+.tl-left{display:flex;flex-direction:column;align-items:center;width:32px;flex-shrink:0}
+.tl-dot{width:12px;height:12px;border-radius:50%;background:var(--grn);border:2px solid #fff;box-shadow:0 0 0 2px var(--grn);flex-shrink:0;margin-top:4px}
+.tl-dot.gold{background:var(--gold);box-shadow:0 0 0 2px var(--gold)}
+.tl-dot.blue{background:var(--blue);box-shadow:0 0 0 2px var(--blue)}
+.tl-dot.red{background:var(--red);box-shadow:0 0 0 2px var(--red)}
+.tl-line{width:2px;background:var(--bd);flex:1;margin-top:4px}
+.tl-body{padding-bottom:1.1rem;flex:1}
+.tl-body h5{font-size:.82rem;font-weight:700;color:var(--tx)}
+.tl-body p{font-size:.76rem;color:var(--t2);margin-top:.15rem;line-height:1.4}
+.tl-body .tl-date{font-size:.7rem;color:var(--t3)}
+.avatar-xl{width:56px;height:56px;border-radius:50%;background:var(--grn);color:#fff;font-size:1.3rem;font-weight:800;display:flex;align-items:center;justify-content:center}
+.xp-bar-wrap{background:var(--bd);border-radius:99px;height:10px;overflow:hidden;margin:.3rem 0}
+.xp-bar{background:var(--grn);border-radius:99px;height:100%;transition:width .5s}
+.cert-card{border:2px solid var(--gold);border-radius:var(--r);padding:1.1rem;background:var(--gold-l);display:flex;align-items:center;gap:.75rem;margin-bottom:.75rem}
+.cert-ico{font-size:2rem}
+.cert-info h4{font-size:.88rem;font-weight:700;color:var(--gold)}
+.cert-info p{font-size:.75rem;color:var(--t2)}
+
+/* INDICADORES ESTRATÉGICOS */
+.ind-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.85rem;margin-bottom:1.25rem}
+.ind-card{background:var(--surface);border:1px solid var(--bd);border-radius:var(--r);padding:1rem 1.1rem;display:flex;flex-direction:column;gap:.25rem;position:relative;overflow:hidden}
+.ind-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.ind-card.ok::before{background:var(--grn)}
+.ind-card.warn::before{background:var(--gold)}
+.ind-card.danger::before{background:var(--red)}
+.ind-card.info::before{background:var(--blue)}
+.ind-label{font-size:.72rem;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.15rem}
+.ind-value{font-size:1.9rem;font-weight:800;line-height:1}
+.ind-value.ok{color:var(--grn)}
+.ind-value.warn{color:var(--gold)}
+.ind-value.danger{color:var(--red)}
+.ind-value.info{color:var(--blue)}
+.ind-sub{font-size:.73rem;color:var(--t2);margin-top:.2rem}
+.ind-alert{font-size:.72rem;font-weight:700;margin-top:.3rem}
+.ind-alert.ok{color:var(--grn)}
+.ind-alert.warn{color:var(--gold)}
+.ind-alert.danger{color:var(--red)}
+.ind-donut{position:absolute;top:.85rem;right:.9rem;width:40px;height:40px}
+
+/* QUADRANT RISK */
+.risk-quadrant{display:flex;flex-direction:column;gap:.35rem;margin-top:.5rem}
+.rq-row{display:flex;align-items:center;gap:.6rem}
+.rq-label{font-size:.75rem;font-weight:600;width:110px;flex-shrink:0;text-align:right;color:var(--t2)}
+.rq-bar-wrap{flex:1;height:22px;background:var(--bg);border-radius:4px;overflow:hidden;position:relative}
+.rq-bar{height:100%;border-radius:4px;display:flex;align-items:center;padding-left:.5rem;font-size:.7rem;font-weight:700;color:#fff;transition:width .5s}
+.rq-count{font-size:.75rem;font-weight:700;color:var(--t2);width:28px;text-align:right;flex-shrink:0}
+
+/* QUESTÕES */
+.questao-filter-bar{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem;padding:.75rem;background:var(--surface);border:1px solid var(--bd);border-radius:var(--r)}
+.filter-group{display:flex;flex-direction:column;flex:1;min-width:120px;gap:.3rem}
+
+/* PDF */
+.pdf-drop-area{border:2px dashed var(--bd2);border-radius:var(--r);padding:2rem;text-align:center;cursor:pointer;background:#fafcfa;transition:all .2s;position:relative}
+.pdf-drop-area:hover,.pdf-drop-area.dragover{border-color:var(--grn);background:var(--grn-l)}
+.pdf-drop-icon{font-size:2.2rem;margin-bottom:.6rem;opacity:.5}
+.pdf-drop-title{font-size:.88rem;font-weight:600;color:var(--tx);margin-bottom:.25rem}
+.pdf-drop-sub{font-size:.75rem;color:var(--t3)}
+.pdf-uploaded{display:none;align-items:center;gap:.6rem;background:var(--grn-l);border:1px solid var(--bd2);border-radius:var(--rs);padding:.6rem .9rem;margin-top:.75rem}
+.pdf-uploaded .pu-name{font-size:.8rem;font-weight:600;color:var(--grn);flex:1}
+.pdf-uploaded .pu-remove{background:none;border:none;cursor:pointer;color:var(--red);font-size:.8rem;font-family:var(--font)}
+.banco-questao-item{border:1px solid var(--bd);border-radius:var(--rs);padding:.75rem 1rem;margin-bottom:.6rem;display:flex;gap:.75rem;align-items:flex-start;background:var(--surface)}
+.bqi-num{width:28px;height:28px;border-radius:50%;background:var(--grn-l);color:var(--grn);font-size:.75rem;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.bqi-body{flex:1}
+.bqi-body p{font-size:.78rem;color:var(--tx);line-height:1.5;margin-bottom:.35rem}
+.bqi-meta{display:flex;gap:.4rem;flex-wrap:wrap}
+.insert-tabs{display:flex;border-bottom:1px solid var(--bd);margin-bottom:1.1rem}
+.insert-tab{padding:.5rem 1rem;font-size:.82rem;font-weight:600;color:var(--t2);background:none;border:none;cursor:pointer;font-family:var(--font);border-bottom:2.5px solid transparent;margin-bottom:-1px}
+.insert-tab.on{color:var(--grn);border-bottom-color:var(--grn)}
+.manual-questao-form{display:flex;flex-direction:column;gap:.6rem}
+.opcao-row{display:flex;align-items:center;gap:.5rem}
+.opcao-letra{width:28px;height:28px;border-radius:50%;background:var(--s2);color:var(--t2);font-size:.78rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.opcao-row input{flex:1;padding:.42rem .65rem;border:1.5px solid var(--bd);border-radius:var(--rs);font-size:.8rem;font-family:var(--font);color:var(--tx);background:#fff;outline:none}
+.opcao-row input:focus{border-color:var(--grn)}
+.opcao-correta-radio{accent-color:var(--grn);width:15px;height:15px;cursor:pointer}
+
+/* CADASTRO DE ALUNOS */
+.aluno-avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:700;color:#fff;flex-shrink:0}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:500;display:none;align-items:center;justify-content:center}
+.modal-overlay.show{display:flex}
+.modal-box{background:#fff;border-radius:var(--r);border:1px solid var(--bd);padding:1.5rem;width:480px;max-width:96vw;max-height:90vh;overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,.15)}
+.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem}
+.modal-title{font-size:.95rem;font-weight:700}
+.modal-close{background:none;border:none;cursor:pointer;font-size:1.2rem;color:var(--t3);line-height:1;padding:.2rem}
+.modal-close:hover{color:var(--red)}
+
+.notify{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--tx);color:#fff;padding:.6rem 1rem;border-radius:var(--rs);font-size:.8rem;z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none}
+.notify.ok{background:var(--grn)}
+.notify.err{background:var(--red)}
+.notify.show{opacity:1}
+</style>
+</head>
+<body>
+<div id="notify" class="notify"></div>
+
+<!-- MODAL CADASTRO ALUNO -->
+<div class="modal-overlay" id="modal-aluno">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span class="modal-title" id="modal-aluno-title">Cadastrar novo estudante</span>
+      <button class="modal-close" onclick="fecharModal()">✕</button>
+    </div>
+    <div class="grid2" style="gap:.75rem">
+      <div class="form-row"><label class="form-label">Nome completo *</label><input class="form-input" id="a-nome" placeholder="Nome do estudante"></div>
+      <div class="form-row"><label class="form-label">E-mail *</label><input class="form-input" id="a-email" type="email" placeholder="email@exemplo.com"></div>
+      <div class="form-row"><label class="form-label">CPF</label><input class="form-input" id="a-cpf" placeholder="000.000.000-00"></div>
+      <div class="form-row"><label class="form-label">Telefone</label><input class="form-input" id="a-tel" placeholder="(11) 99999-9999"></div>
+      <div class="form-row"><label class="form-label">Turma / Período</label><select class="form-select" id="a-turma"><option value="">Selecione</option><option>Turma 2024 — 1º período</option><option>Turma 2024 — 2º período</option><option>Turma 2025 — 1º período</option><option>Turma 2025 — 2º período</option><option>Turma 2026 — 1º período</option><option>Extensão OAB</option></select></div>
+      <div class="form-row"><label class="form-label">Trilha principal</label><select class="form-select" id="a-trilha"><option>Direito Civil</option><option>Direito Penal</option><option>Constitucional</option><option>Processo Civil</option><option>Todas as áreas</option></select></div>
+      <div class="form-row"><label class="form-label">Senha inicial *</label><input class="form-input" id="a-senha" type="password" placeholder="Mínimo 8 caracteres"></div>
+      <div class="form-row"><label class="form-label">Status</label><select class="form-select" id="a-status"><option value="ativo">Ativo</option><option value="inativo">Inativo</option><option value="pendente">Pendente (aguardando pagamento)</option></select></div>
+    </div>
+    <div class="form-row" style="margin-top:.5rem"><label class="form-label">Observações</label><textarea class="xl-textarea" id="a-obs" style="min-height:60px" placeholder="Informações adicionais sobre o estudante..."></textarea></div>
+    <div id="modal-err" style="display:none;background:var(--red-l);color:var(--red);border-radius:var(--rs);padding:.5rem .75rem;font-size:.78rem;margin-bottom:.75rem"></div>
+    <div style="display:flex;gap:.5rem;justify-content:flex-end;margin-top:.75rem">
+      <button class="btn btn-outline" onclick="fecharModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="salvarAluno()" id="btn-salvar-aluno">💾 Cadastrar estudante</button>
+    </div>
+  </div>
+</div>
+
+<!-- LOGIN -->
+<div id="login-screen">
+<div class="login-card">
+  <div class="login-header">
+    <div class="login-logo-row">
+      <div class="login-logo-ico">⚖️</div>
+      <div class="login-logo-name">Lex<span>ia</span></div>
+    </div>
+    <div class="login-sub">Plataforma de Educação Jurídica com IA</div>
+  </div>
+  <div class="login-body">
+    <button class="login-google" onclick="doLogin(USERS[2])">
+      <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+      Continuar com Google
+    </button>
+    <div class="login-divider"><span>ou entre com e-mail</span></div>
+    <div class="login-tabs">
+      <button class="login-tab on" onclick="setLoginTab('aluno',this)">Estudante</button>
+      <button class="login-tab" onclick="setLoginTab('admin',this)">Admin</button>
+    </div>
+    <div id="login-err" class="login-err"></div>
+    <input class="finput" id="login-email" type="email" placeholder="E-mail" onkeydown="if(event.key==='Enter')document.getElementById('login-pass').focus()">
+    <input class="finput" id="login-pass" type="password" placeholder="Senha" onkeydown="if(event.key==='Enter')tryLogin()">
+    <button class="login-btn" onclick="tryLogin()">Entrar na plataforma</button>
+    <div class="login-hint">
+      Demo aluno: <a onclick="fillDemo('aluno')">aluno@lexia.br / Aluno@2026</a><br>
+      Demo admin: <a onclick="fillDemo('admin')">admin@lexia.br / Admin@2026</a>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- APP -->
+<div id="app-screen">
+  <div class="topbar">
+    <div class="tb-left">
+      <div class="tb-logo-wrap"><span style="font-size:1.25rem">⚖️</span><span class="tb-logo-name">Lex<span>ia</span></span></div>
+      <span class="tb-breadcrumb" id="tb-breadcrumb">Dashboard</span>
+    </div>
+    <div class="tb-right">
+      <div class="tb-uinfo"><span class="tb-uname" id="tb-uname"></span><span class="tb-urole" id="tb-urole"></span></div>
+      <div class="tb-avatar" id="tb-uavatar" onclick="doLogout()" title="Sair">A</div>
+    </div>
+  </div>
+  <div class="app-body">
+    <div class="sidebar">
+      <div id="sb-aluno">
+        <div class="sb-section-label">Início</div>
+        <div class="sb-item on" data-panel="dash" onclick="showPanel('dash',this)"><span class="sb-ico">🏠</span>Dashboard</div>
+        <div class="sb-section-label">Aprender</div>
+        <div class="sb-item" data-panel="trilhas" onclick="showPanel('trilhas',this)"><span class="sb-ico">📚</span>Trilhas de Estudo</div>
+        <div class="sb-item" data-panel="flashcards" onclick="showPanel('flashcards',this)"><span class="sb-ico">🃏</span>Flashcards<span class="sb-badge">48</span></div>
+        <div class="sb-item" data-panel="questoes" onclick="showPanel('questoes',this)"><span class="sb-ico">❓</span>Questões OAB</div>
+        <div class="sb-item" data-panel="simulado" onclick="showPanel('simulado',this)"><span class="sb-ico">📋</span>Simulado OAB</div>
+        <div class="sb-section-label">IA Jurídica</div>
+        <div class="sb-item" data-panel="pecas" onclick="showPanel('pecas',this)"><span class="sb-ico">📝</span>Gerador de Peças<span class="sb-badge new">IA</span></div>
+        <div class="sb-item" data-panel="juris" onclick="showPanel('juris',this)"><span class="sb-ico">🔍</span>Jurisprudência IA</div>
+        <div class="sb-item" data-panel="resumos" onclick="showPanel('resumos',this)"><span class="sb-ico">📄</span>Resumos Automáticos</div>
+        <div class="sb-section-label">Minha conta</div>
+        <div class="sb-item" data-panel="perfil" onclick="showPanel('perfil',this)"><span class="sb-ico">👤</span>Perfil & XP</div>
+        <div class="sb-item" data-panel="certificados" onclick="showPanel('certificados',this)"><span class="sb-ico">🏆</span>Certificados</div>
+        <div class="sb-spacer"></div>
+        <div class="sb-logout" onclick="doLogout()">🚪 Sair</div>
+      </div>
+      <div id="sb-admin" style="display:none">
+        <div class="sb-section-label">Admin</div>
+        <div class="sb-item on" data-panel="adm-dash" onclick="showPanel('adm-dash',this)"><span class="sb-ico">📊</span>Analytics</div>
+        <div class="sb-item" data-panel="adm-provas" onclick="showPanel('adm-provas',this)"><span class="sb-ico">📋</span>Provas &amp; Questões</div>
+        <div class="sb-item" data-panel="adm-alunos" onclick="showPanel('adm-alunos',this)"><span class="sb-ico">👥</span>Estudantes</div>
+        <div class="sb-item" data-panel="adm-conteudo" onclick="showPanel('adm-conteudo',this)"><span class="sb-ico">📚</span>Conteúdo</div>
+        <div class="sb-item" data-panel="adm-pecas" onclick="showPanel('adm-pecas',this)"><span class="sb-ico">📝</span>Peças Geradas</div>
+        <div class="sb-item" data-panel="adm-relatorios" onclick="showPanel('adm-relatorios',this)"><span class="sb-ico">📈</span>Relatórios</div>
+        <div class="sb-spacer"></div>
+        <div class="sb-logout" onclick="doLogout()">🚪 Sair</div>
+      </div>
+    </div>
+
+    <div class="main-content" id="main-content">
+
+      <!-- ===== PAINEL ALUNO DASH ===== -->
+      <div class="panel on" id="panel-dash">
+        <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem">
+          <div class="avatar-xl" id="dash-avatar">A</div>
+          <div>
+            <div style="font-size:1.1rem;font-weight:800" id="dash-greeting">Olá!</div>
+            <div style="font-size:.8rem;color:var(--t2)">Direito Civil · OAB em preparação</div>
+            <div style="display:flex;gap:.5rem;margin-top:.3rem"><span class="tag tag-grn">Nível 4</span><span class="tag tag-gold">1.240 XP</span><span class="tag tag-blue">🔥 7 dias streak</span></div>
+          </div>
+        </div>
+        <div style="background:var(--grn-l);border:1px solid var(--bd2);border-radius:var(--r);padding:1rem 1.25rem;margin-bottom:1.25rem;display:flex;align-items:center;justify-content:space-between">
+          <div><div style="font-size:.78rem;font-weight:700;color:var(--grn);margin-bottom:.2rem">📌 Meta OAB 1ª Fase</div><div style="font-size:.82rem">Você está a <strong>23 dias</strong> do próximo simulado. Meta: 80% em Direito Civil.</div></div>
+          <button class="btn btn-primary btn-sm" onclick="showPanel('simulado',document.querySelector('[data-panel=simulado]'))">Simular agora</button>
+        </div>
+        <div class="grid4" style="margin-bottom:1.25rem">
+          <div class="stat-card"><div class="stat-ico">📚</div><div class="stat-val">12</div><div class="stat-lbl">Aulas concluídas</div></div>
+          <div class="stat-card"><div class="stat-ico">📝</div><div class="stat-val">8</div><div class="stat-lbl">Peças geradas</div></div>
+          <div class="stat-card"><div class="stat-ico">🃏</div><div class="stat-val">94%</div><div class="stat-lbl">Acerto flashcards</div></div>
+          <div class="stat-card"><div class="stat-ico">❓</div><div class="stat-val">67%</div><div class="stat-lbl">Acerto OAB</div></div>
+        </div>
+        <div class="grid2">
+          <div class="card"><div class="card-title">📊 Progresso por área</div><div style="display:flex;flex-direction:column;gap:.75rem"><div><div style="display:flex;justify-content:space-between;font-size:.78rem;margin-bottom:.3rem"><span>Direito Civil</span><span style="color:var(--grn);font-weight:700">78%</span></div><div class="progress-bar-wrap"><div class="progress-bar" style="width:78%"></div></div></div><div><div style="display:flex;justify-content:space-between;font-size:.78rem;margin-bottom:.3rem"><span>Direito Penal</span><span style="color:var(--grn);font-weight:700">55%</span></div><div class="progress-bar-wrap"><div class="progress-bar" style="width:55%"></div></div></div><div><div style="display:flex;justify-content:space-between;font-size:.78rem;margin-bottom:.3rem"><span>Constitucional</span><span style="color:var(--gold);font-weight:700">42%</span></div><div class="progress-bar-wrap"><div class="progress-bar gold" style="width:42%"></div></div></div><div><div style="display:flex;justify-content:space-between;font-size:.78rem;margin-bottom:.3rem"><span>Processo Civil</span><span style="color:var(--blue);font-weight:700">30%</span></div><div class="progress-bar-wrap"><div class="progress-bar blue" style="width:30%"></div></div></div></div></div>
+          <div class="card"><div class="card-title">🕐 Atividade recente</div><div class="timeline"><div class="tl-item"><div class="tl-left"><div class="tl-dot"></div><div class="tl-line"></div></div><div class="tl-body"><h5>Peça gerada: Habeas Corpus</h5><p>Direito Penal</p><div class="tl-date">Hoje, 09:14</div></div></div><div class="tl-item"><div class="tl-left"><div class="tl-dot gold"></div><div class="tl-line"></div></div><div class="tl-body"><h5>Flashcards — 15 revisados</h5><p>Teoria do Delito</p><div class="tl-date">Ontem, 20:30</div></div></div><div class="tl-item"><div class="tl-left"><div class="tl-dot blue"></div></div><div class="tl-body"><h5>Questão OAB respondida</h5><p>79% acerto · Contratos</p><div class="tl-date">23/05, 18:00</div></div></div></div></div>
+        </div>
+      </div>
+
+      <!-- ===== TRILHAS ===== -->
+      <div class="panel" id="panel-trilhas">
+        <div class="page-title">📚 Trilhas de Estudo</div>
+        <div class="grid2">
+          <div class="card" style="border-left:4px solid var(--grn)"><div class="card-title">⚖️ Direito Civil</div><p style="font-size:.78rem;color:var(--t2);margin-bottom:.75rem">Parte Geral, Contratos, Família, Sucessões e Responsabilidade Civil.</p><div style="font-size:.75rem;color:var(--t2);margin-bottom:.4rem">Progresso: 78% · 14/18 módulos</div><div class="progress-bar-wrap" style="margin-bottom:.75rem"><div class="progress-bar" style="width:78%"></div></div><div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.75rem"><span class="tag tag-grn">14 aulas</span><span class="tag tag-blue">32 flashcards</span><span class="tag tag-gold">120 questões</span></div><button class="btn btn-primary btn-sm">Continuar trilha →</button></div>
+          <div class="card" style="border-left:4px solid var(--red)"><div class="card-title">🔒 Direito Penal</div><p style="font-size:.78rem;color:var(--t2);margin-bottom:.75rem">Teoria do Delito, Penas, Crimes contra a pessoa e patrimônio.</p><div style="font-size:.75rem;color:var(--t2);margin-bottom:.4rem">Progresso: 55% · 8/15 módulos</div><div class="progress-bar-wrap" style="margin-bottom:.75rem"><div class="progress-bar" style="width:55%"></div></div><div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.75rem"><span class="tag tag-grn">10 aulas</span><span class="tag tag-blue">28 flashcards</span><span class="tag tag-gold">95 questões</span></div><button class="btn btn-primary btn-sm">Continuar →</button></div>
+          <div class="card" style="border-left:4px solid var(--blue)"><div class="card-title">🏛️ Direito Constitucional</div><p style="font-size:.78rem;color:var(--t2);margin-bottom:.75rem">Princípios, Direitos Fundamentais e Controle de Constitucionalidade.</p><div style="font-size:.75rem;color:var(--t2);margin-bottom:.4rem">Progresso: 42% · 5/12 módulos</div><div class="progress-bar-wrap" style="margin-bottom:.75rem"><div class="progress-bar blue" style="width:42%"></div></div><div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.75rem"><span class="tag tag-grn">8 aulas</span><span class="tag tag-blue">20 flashcards</span><span class="tag tag-gold">80 questões</span></div><button class="btn btn-primary btn-sm">Iniciar módulo</button></div>
+          <div class="card" style="border-left:4px solid var(--pur)"><div class="card-title">📋 Processo Civil</div><p style="font-size:.78rem;color:var(--t2);margin-bottom:.75rem">CPC/2015, Petição Inicial, Recursos, Execução e Tutela Provisória.</p><div style="font-size:.75rem;color:var(--t2);margin-bottom:.4rem">Progresso: 30% · 3/10 módulos</div><div class="progress-bar-wrap" style="margin-bottom:.75rem"><div class="progress-bar pur" style="width:30%"></div></div><div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.75rem"><span class="tag tag-grn">6 aulas</span><span class="tag tag-blue">15 flashcards</span><span class="tag tag-gold">60 questões</span></div><button class="btn btn-primary btn-sm">Iniciar módulo</button></div>
+        </div>
+      </div>
+
+      <!-- ===== FLASHCARDS ===== -->
+      <div class="panel" id="panel-flashcards">
+        <div class="page-title">🃏 Flashcards Jurídicos</div>
+        <div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1rem">
+          <span class="area-chip on" onclick="filtrarFC('todos',this)">Todos</span><span class="area-chip" onclick="filtrarFC('civil',this)">Civil</span><span class="area-chip" onclick="filtrarFC('penal',this)">Penal</span><span class="area-chip" onclick="filtrarFC('constitucional',this)">Constitucional</span><span class="area-chip" onclick="filtrarFC('processo-civil',this)">Processo Civil</span><span class="area-chip" onclick="filtrarFC('trabalho',this)">Trabalho</span><span class="area-chip" onclick="filtrarFC('tributario',this)">Tributário</span><span class="area-chip" onclick="filtrarFC('administrativo',this)">Administrativo</span><span class="area-chip" onclick="filtrarFC('consumidor',this)">Consumidor</span><span class="area-chip" onclick="filtrarFC('empresarial',this)">Empresarial</span><span class="area-chip" onclick="filtrarFC('familia',this)">Família</span><span class="area-chip" onclick="filtrarFC('etica',this)">Ética OAB</span>
+        </div>
+        <div class="grid2" id="fc-grid">
+          <div class="flash-card" data-area="civil" onclick="this.classList.toggle('revealed')"><span class="tag tag-grn" style="margin-bottom:.5rem">Civil</span><div class="fc-q">Qual o prazo geral de prescrição no Código Civil de 2002?</div><div class="fc-a">10 anos (art. 205, CC). Aplica-se quando a lei não fixar prazo menor.</div><div class="fc-hint">Toque para revelar ↩</div></div>
+          <div class="flash-card" data-area="penal" onclick="this.classList.toggle('revealed')"><span class="tag tag-red" style="margin-bottom:.5rem">Penal</span><div class="fc-q">O que é dolo eventual? Como se distingue da culpa consciente?</div><div class="fc-a">Dolo eventual: agente prevê e assume o risco (art. 18, I, CP). Culpa consciente: prevê, mas acredita que não ocorrerá.</div><div class="fc-hint">Toque para revelar ↩</div></div>
+          <div class="flash-card" data-area="constitucional" onclick="this.classList.toggle('revealed')"><span class="tag tag-blue" style="margin-bottom:.5rem">Constitucional</span><div class="fc-q">Quais são as cláusulas pétreas da CF/88?</div><div class="fc-a">Art. 60, §4º: forma federativa; voto direto, secreto, universal e periódico; separação dos Poderes; direitos e garantias individuais.</div><div class="fc-hint">Toque para revelar ↩</div></div>
+          <div class="flash-card" data-area="processo-civil" onclick="this.classList.toggle('revealed')"><span class="tag tag-pur" style="margin-bottom:.5rem">Processo Civil</span><div class="fc-q">O que é tutela de evidência no CPC/2015?</div><div class="fc-a">Art. 311 CPC: tutela provisória independente de urgência quando há prova e probabilidade de procedência.</div><div class="fc-hint">Toque para revelar ↩</div></div>
+        </div>
+        <div class="card" style="margin-top:1rem"><div class="card-title">✨ Gerar novo flashcard com IA</div><div style="display:flex;gap:.75rem;align-items:flex-end;flex-wrap:wrap"><div class="form-row" style="flex:1;min-width:150px;margin-bottom:0"><label class="form-label">Área</label><select class="form-select" id="fc-gen-area"><option>Civil</option><option>Penal</option><option>Constitucional</option><option>Processo Civil</option><option>Trabalho</option><option>Tributário</option><option>Administrativo</option><option>Consumidor</option><option>Empresarial</option><option>Família</option><option>Ética OAB</option><option>aleatório</option></select></div><div class="form-row" style="flex:2;min-width:200px;margin-bottom:0"><label class="form-label">Tema específico (opcional)</label><input class="form-input" id="fc-gen-tema" placeholder="Ex: prescrição, habeas corpus..."></div><button class="btn btn-primary" onclick="gerarFlashcardIA()" style="flex-shrink:0">✨ Gerar</button></div><div class="ai-loading" id="fc-loading" style="margin-top:.5rem"><div class="dot"></div><div class="dot"></div><div class="dot"></div><span>Gerando flashcard...</span></div></div>
+      </div>
+
+      <!-- ===== QUESTÕES ===== -->
+      <div class="panel" id="panel-questoes">
+        <div class="page-title">❓ Questões OAB</div>
+        <div class="grid2" style="margin-bottom:1rem">
+          <div class="stat-card"><div class="stat-val" style="color:var(--grn)" id="q-taxa">67%</div><div class="stat-lbl">Taxa de acerto</div></div>
+          <div class="stat-card"><div class="stat-val" id="q-total">143</div><div class="stat-lbl">Questões respondidas</div></div>
+        </div>
+        <div class="card" style="margin-bottom:1rem"><div class="card-title">🎯 Personalizar banco</div><div style="display:flex;gap:.75rem;flex-wrap:wrap;align-items:flex-end"><div class="filter-group"><label class="form-label">Área</label><select class="form-select" id="q-filtro-area" onchange="aplicarFiltros()"><option value="">Todas</option><option value="civil">Civil</option><option value="penal">Penal</option><option value="constitucional">Constitucional</option><option value="processo">Processo Civil</option></select></div><div class="filter-group"><label class="form-label">Exame OAB</label><select class="form-select" id="q-filtro-exame" onchange="aplicarFiltros()"><option value="">Todos</option><option value="40">40º</option><option value="39">39º</option><option value="38">38º</option></select></div><div class="filter-group"><label class="form-label">Instituição</label><select class="form-select" id="q-filtro-inst" onchange="aplicarFiltros()"><option value="">Todas</option><option value="fgv">FGV</option><option value="cespe">CESPE</option></select></div><div class="filter-group"><label class="form-label">Dificuldade</label><select class="form-select" id="q-filtro-dif" onchange="aplicarFiltros()"><option value="">Todas</option><option value="facil">Fácil</option><option value="medio">Médio</option><option value="dificil">Difícil</option></select></div><button class="btn btn-outline btn-sm" onclick="limparFiltros()">Limpar</button></div><div style="margin-top:.5rem;font-size:.75rem;color:var(--t3)">Banco: <strong id="q-banco-count">4</strong> questões</div></div>
+        <div class="card" id="questao-card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem"><div style="display:flex;gap:.5rem"><span class="tag tag-grn" id="q-tag-area">Direito Civil</span><span class="tag tag-gray" id="q-tag-dif">Médio</span></div><span style="font-size:.72rem;color:var(--t3)" id="q-tag-ref">OAB 38º · FGV</span></div>
+          <p style="font-size:.85rem;line-height:1.65;margin-bottom:1rem" id="q-enunciado">João celebrou contrato de compra e venda de imóvel com Maria. Após a assinatura, mas antes do registro, João faleceu. Seus herdeiros pretendem registrar o imóvel. Assinale a alternativa correta:</p>
+          <div style="display:flex;flex-direction:column;gap:.5rem" id="questao-options"></div>
+          <div id="questao-feedback" style="display:none;margin-top:.75rem;padding:.75rem;border-radius:var(--rs)"></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:1.1rem;padding-top:.9rem;border-top:1px solid var(--bd)">
+            <button class="btn btn-outline" id="q-btn-prev" onclick="navegarQuestao(-1)">← Anterior</button>
+            <span style="font-size:.78rem;color:var(--t2)">Questão <strong id="q-idx-atual">1</strong> de <strong id="q-idx-total">4</strong></span>
+            <button class="btn btn-primary" id="q-btn-next" onclick="navegarQuestao(1)">Próxima →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== SIMULADO ===== -->
+      <div class="panel" id="panel-simulado">
+        <div class="page-title">📋 Simulado OAB</div>
+        <div class="grid2" style="margin-bottom:1rem"><div class="card"><div class="card-title">🎯 Simulado completo</div><p style="font-size:.78rem;color:var(--t2);margin-bottom:.75rem">80 questões · Todas as áreas · 5 horas · Modelo oficial OAB 1ª Fase</p><button class="btn btn-primary">Iniciar simulado</button></div><div class="card"><div class="card-title">⚡ Simulado rápido</div><p style="font-size:.78rem;color:var(--t2);margin-bottom:.75rem">20 questões · Área específica · 1h30min</p><button class="btn btn-outline">Iniciar rápido</button></div></div>
+        <div class="card"><div class="card-title">📊 Histórico</div><table><thead><tr><th>Data</th><th>Tipo</th><th>Acerto</th><th>Melhor área</th><th></th></tr></thead><tbody><tr><td>20/05</td><td>Completo</td><td><span class="tag tag-grn">72%</span></td><td>Penal</td><td><button class="btn btn-ghost btn-sm">Ver</button></td></tr><tr><td>15/05</td><td>Rápido · Civil</td><td><span class="tag tag-gold">58%</span></td><td>Contratos</td><td><button class="btn btn-ghost btn-sm">Ver</button></td></tr><tr><td>10/05</td><td>Completo</td><td><span class="tag tag-red">48%</span></td><td>Constitucional</td><td><button class="btn btn-ghost btn-sm">Ver</button></td></tr></tbody></table></div>
+      </div>
+
+      <!-- ===== PEÇAS ===== -->
+      <div class="panel" id="panel-pecas">
+        <div class="page-title">📝 Gerador de Peças Jurídicas com IA</div>
+        <div class="grid2" style="margin-bottom:1rem">
+          <div class="peca-card" onclick="selecionarPeca('peticao')"><div class="peca-icon" style="background:var(--grn-l)">📜</div><div class="peca-info"><h4>Petição Inicial</h4><p>Cível, família, consumidor, trabalhista</p></div><span class="tag tag-grn">Popular</span></div>
+          <div class="peca-card" onclick="selecionarPeca('recurso')"><div class="peca-icon" style="background:var(--blue-l)">📤</div><div class="peca-info"><h4>Recurso</h4><p>Apelação, Agravo, Embargos</p></div></div>
+          <div class="peca-card" onclick="selecionarPeca('contrato')"><div class="peca-icon" style="background:var(--gold-l)">📋</div><div class="peca-info"><h4>Contrato</h4><p>Prestação de serviços, compra e venda</p></div></div>
+          <div class="peca-card" onclick="selecionarPeca('habeas')"><div class="peca-icon" style="background:var(--red-l)">🔓</div><div class="peca-info"><h4>Habeas Corpus</h4><p>HC preventivo e liberatório</p></div></div>
+        </div>
+        <div class="card" id="peca-form" style="display:none">
+          <div class="card-title" id="peca-form-title">📝 Configurar Peça</div>
+          <div class="grid2"><div class="form-row"><label class="form-label">Área</label><select class="form-select" id="peca-area"><option>Direito Civil</option><option>Direito Penal</option><option>Trabalho</option><option>Constitucional</option><option>Consumidor</option></select></div><div class="form-row"><label class="form-label">Tribunal / Juízo</label><input class="form-input" id="peca-tribunal" placeholder="Ex: 1ª Vara Cível de SP"></div></div>
+          <div class="form-row"><label class="form-label">Partes</label><input class="form-input" id="peca-partes" placeholder="Ex: João Silva (Autor) x Maria Costa (Ré)"></div>
+          <div class="form-row"><label class="form-label">Fatos e pedidos</label><textarea class="xl-textarea" id="peca-fatos" placeholder="Descreva os fatos e pedidos..."></textarea></div>
+          <div style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap">
+            <button class="btn btn-primary" onclick="gerarPeca()">✨ Gerar com IA</button>
+            <button class="btn btn-outline" onclick="document.getElementById('peca-form').style.display='none'">Cancelar</button>
+            <div class="ai-loading" id="peca-loading"><div class="dot"></div><div class="dot"></div><div class="dot"></div><span>Elaborando...</span></div>
+          </div>
+          <div class="ai-result" id="peca-result"></div>
+          <div style="display:none;margin-top:.75rem;gap:.5rem;flex-wrap:wrap" id="peca-actions"><button class="btn btn-outline btn-sm" onclick="copiarTexto('peca-result')">📋 Copiar</button><button class="btn btn-gold btn-sm" onclick="notify('Salvo!','ok')">💾 Salvar</button></div>
+        </div>
+      </div>
+
+      <!-- ===== JURISPRUDÊNCIA ===== -->
+      <div class="panel" id="panel-juris">
+        <div class="page-title">🔍 Pesquisa de Jurisprudência com IA</div>
+        <div class="card"><div class="card-title">Consulta inteligente</div><div class="form-row"><label class="form-label">Tema ou situação jurídica</label><textarea class="xl-textarea" id="juris-query" style="min-height:70px" placeholder="Ex: responsabilidade civil do médico por erro cirúrgico..."></textarea></div><div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.75rem"><span class="area-chip" onclick="toggleChip(this)">STJ</span><span class="area-chip on" onclick="toggleChip(this)">STF</span><span class="area-chip" onclick="toggleChip(this)">TJ-SP</span><span class="area-chip" onclick="toggleChip(this)">TST</span></div><div style="display:flex;align-items:center;gap:.75rem"><button class="btn btn-primary" onclick="pesquisarJuris()">🔍 Pesquisar</button><div class="ai-loading" id="juris-loading"><div class="dot"></div><div class="dot"></div><div class="dot"></div><span>Consultando...</span></div></div></div>
+        <div id="juris-results" style="display:none;margin-top:1rem"><div class="section-hdr"><h3>Resultados</h3><span class="tag tag-grn" id="juris-count">0 julgados</span></div><div id="juris-list"></div></div>
+        <div class="card"><div class="card-title">💬 Assistente jurídico IA</div><div class="chat-wrap" id="juris-chat"><div class="chat-msg ai"><div class="chat-bubble">Olá! Posso ajudar com jurisprudência, interpretação de normas e prazos processuais.</div><div class="chat-time">Agora</div></div></div><div class="chat-input-row"><input type="text" id="juris-chat-input" placeholder="Pergunte sobre legislação, prazos..." onkeydown="if(event.key==='Enter')enviarChat()"><button onclick="enviarChat()">Enviar</button></div></div>
+      </div>
+
+      <!-- ===== RESUMOS ===== -->
+      <div class="panel" id="panel-resumos">
+        <div class="page-title">📄 Resumos Automáticos com IA</div>
+        <div class="card"><div class="card-title">Gerar resumo de tema jurídico</div><div class="form-row"><label class="form-label">Tema</label><input class="form-input" id="resumo-tema" placeholder="Ex: Teoria Geral dos Contratos no Código Civil"></div><div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.75rem"><span class="area-chip on" onclick="toggleChip(this)">Resumo doutrinário</span><span class="area-chip" onclick="toggleChip(this)">Mapa mental</span><span class="area-chip" onclick="toggleChip(this)">Questões práticas</span></div><div style="display:flex;gap:.5rem;align-items:center"><button class="btn btn-primary" onclick="gerarResumo()">✨ Gerar</button><div class="ai-loading" id="resumo-loading"><div class="dot"></div><div class="dot"></div><div class="dot"></div><span>Elaborando...</span></div></div><div class="ai-result" id="resumo-result"></div><div style="display:none;margin-top:.6rem" id="resumo-actions"><button class="btn btn-outline btn-sm" onclick="copiarTexto('resumo-result')">📋 Copiar</button></div></div>
+      </div>
+
+      <!-- ===== PERFIL ===== -->
+      <div class="panel" id="panel-perfil">
+        <div class="page-title">👤 Perfil & XP</div>
+        <div class="grid2">
+          <div class="card" style="text-align:center"><div class="avatar-xl" style="margin:0 auto .75rem" id="perfil-av">A</div><div style="font-size:1rem;font-weight:800" id="perfil-nome">Ana Carolina</div><div style="font-size:.78rem;color:var(--t2)">aluno@lexia.br</div><div style="margin:.75rem 0"><span class="tag tag-grn">Nível 4 — Bacharel</span></div><div style="font-size:.75rem;color:var(--t2);margin-bottom:.3rem">1.240 / 1.500 XP para o Nível 5</div><div class="xp-bar-wrap"><div class="xp-bar" style="width:83%"></div></div></div>
+          <div class="card"><div class="card-title">🏅 Conquistas</div><div style="display:flex;flex-direction:column;gap:.5rem"><div style="display:flex;align-items:center;gap:.6rem;padding:.5rem;background:var(--grn-l);border-radius:var(--rs)"><span style="font-size:1.2rem">⚖️</span><div><div style="font-size:.8rem;font-weight:700;color:var(--grn)">Primeiro Caso</div><div style="font-size:.72rem;color:var(--t2)">Gerou sua 1ª peça jurídica</div></div></div><div style="display:flex;align-items:center;gap:.6rem;padding:.5rem;background:var(--gold-l);border-radius:var(--rs)"><span style="font-size:1.2rem">🔥</span><div><div style="font-size:.8rem;font-weight:700;color:var(--gold)">Streak de 7 dias</div><div style="font-size:.72rem;color:var(--t2)">Estudou 7 dias consecutivos</div></div></div></div></div>
+        </div>
+      </div>
+
+      <!-- ===== CERTIFICADOS ===== -->
+      <div class="panel" id="panel-certificados">
+        <div class="page-title">🏆 Certificados</div>
+        <div class="cert-card"><div class="cert-ico">🥇</div><div class="cert-info"><h4>Direito Civil — Módulo Contratos</h4><p>Concluído em 15/04/2026 · 40h · Nota 88/100</p></div><button class="btn btn-gold btn-sm" style="margin-left:auto">Baixar PDF</button></div>
+        <div class="cert-card"><div class="cert-ico">⚖️</div><div class="cert-info"><h4>Fundamentos de Direito Penal</h4><p>Concluído em 02/03/2026 · 30h · Nota 74/100</p></div><button class="btn btn-gold btn-sm" style="margin-left:auto">Baixar PDF</button></div>
+      </div>
+
+      <!-- ===== ADMIN ANALYTICS DASHBOARD ===== -->
+      <div class="panel" id="panel-adm-dash">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.1rem">
+          <div class="page-title" style="margin-bottom:0">📊 Analytics — Turma 2026</div>
+          <div style="display:flex;gap:.5rem">
+            <select class="form-select" style="width:auto;font-size:.75rem" id="adm-turma-sel"><option>Turma 2026</option><option>Turma 2025</option><option>Extensão OAB</option></select>
+            <button class="btn btn-outline btn-sm">📥 Exportar</button>
+          </div>
+        </div>
+
+        <!-- INDICADORES ESTRATÉGICOS -->
+        <div style="font-size:.7rem;font-weight:700;color:var(--t3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.6rem">Indicadores estratégicos</div>
+        <div class="ind-grid">
+          <div class="ind-card warn">
+            <div class="ind-label">Mediana da turma</div>
+            <div class="ind-value warn">63%</div>
+            <div class="ind-sub">Meta: 70% aprovação</div>
+            <div class="ind-alert warn">Gap: −7pp para a meta</div>
+            <svg class="ind-donut" viewBox="0 0 40 40"><circle cx="20" cy="20" r="16" fill="none" stroke="#dde6de" stroke-width="4"/><circle cx="20" cy="20" r="16" fill="none" stroke="#b07d1a" stroke-width="4" stroke-dasharray="63.5 37" stroke-linecap="round" transform="rotate(-90 20 20)"/><text x="20" y="24" text-anchor="middle" font-size="8" font-weight="700" fill="#b07d1a">meta</text></svg>
+          </div>
+          <div class="ind-card warn">
+            <div class="ind-label">Taxa de aprovação prevista</div>
+            <div class="ind-value warn">67%</div>
+            <div class="ind-sub">Projeção até nov/2026</div>
+            <div class="ind-alert warn">→ Atenção</div>
+          </div>
+          <div class="ind-card danger">
+            <div class="ind-label">Alunos em risco crítico</div>
+            <div class="ind-value danger">11</div>
+            <div class="ind-sub">22 em risco moderado</div>
+            <div class="ind-alert danger">⚠ Intervenção necessária</div>
+          </div>
+          <div class="ind-card ok">
+            <div class="ind-label">Média geral da turma</div>
+            <div class="ind-value ok">61%</div>
+            <div class="ind-sub">P25: 49,29% · P75: 72,14%</div>
+            <div class="ind-alert ok">↑ +3pp vs. mês anterior</div>
+          </div>
+        </div>
+
+        <!-- TRAJETÓRIA + DISTRIBUIÇÃO DE RISCO -->
+        <div class="grid2" style="margin-bottom:1rem">
+          <div class="card" style="padding-bottom:.75rem">
+            <div class="card-title">Trajetória da turma — evolução mensal</div>
+            <div class="card-sub">Mediana mensal + projeção linear · corte 70%</div>
+            <div style="position:relative;height:200px"><canvas id="chart-trajetoria" role="img" aria-label="Gráfico de linha mostrando a evolução mensal da mediana da turma de fevereiro a novembro">Mediana: Fev 38%, Mar 44%, Abr 46%, Mai 49%, Jun 53% (projeção). Meta 70%.</canvas></div>
+            <div style="display:flex;gap:1rem;margin-top:.5rem;font-size:.72rem;color:var(--t2);flex-wrap:wrap">
+              <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:2px;background:#1a5fa8;display:inline-block"></span>Mediana real</span>
+              <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:2px;background:#1a5fa8;display:inline-block;opacity:.4;border-top:2px dashed #1a5fa8"></span>Projeção</span>
+              <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:2px;background:#c0392b;display:inline-block"></span>Meta 70%</span>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">Distribuição de risco — Turma 2026</div>
+            <div class="card-sub">100 alunos · categorizado pela média de simulados</div>
+            <div class="risk-quadrant" style="margin-top:.75rem">
+              <div class="rq-row"><span class="rq-label">Crítico (&lt;40%)</span><div class="rq-bar-wrap"><div class="rq-bar" style="background:#c0392b;width:30%">11</div></div><span class="rq-count">11</span></div>
+              <div class="rq-row"><span class="rq-label">Em risco (40–54%)</span><div class="rq-bar-wrap"><div class="rq-bar" style="background:#b07d1a;width:59%">22</div></div><span class="rq-count">22</span></div>
+              <div class="rq-row"><span class="rq-label">No caminho (55–69%)</span><div class="rq-bar-wrap"><div class="rq-bar" style="background:#1a5fa8;width:90%">34</div></div><span class="rq-count">34</span></div>
+              <div class="rq-row"><span class="rq-label">Forte (≥70%)</span><div class="rq-bar-wrap"><div class="rq-bar" style="background:#2d7a3a;width:87%">33</div></div><span class="rq-count">33</span></div>
+            </div>
+            <div style="display:flex;justify-content:space-around;margin-top:1rem;padding-top:.75rem;border-top:1px solid var(--bd)">
+              <div style="text-align:center"><div style="font-size:.68rem;color:var(--t3);margin-bottom:.2rem">APROVAÇÃO PREVISTA</div><div style="font-size:1.1rem;font-weight:800;color:var(--grn)">67%</div></div>
+              <div style="text-align:center"><div style="font-size:.68rem;color:var(--t3);margin-bottom:.2rem">MÉDIA INSTITUCIONAL</div><div style="font-size:1.1rem;font-weight:800;color:var(--tx)">61%</div></div>
+              <div style="text-align:center"><div style="font-size:.68rem;color:var(--t3);margin-bottom:.2rem">P25 (1º QUARTIL)</div><div style="font-size:1.1rem;font-weight:800;color:var(--gold)">49,29%</div></div>
+              <div style="text-align:center"><div style="font-size:.68rem;color:var(--t3);margin-bottom:.2rem">P75 (3º QUARTIL)</div><div style="font-size:1.1rem;font-weight:800;color:var(--grn)">72,14%</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- DISTRIBUIÇÃO DE PROFICIÊNCIA + RADAR -->
+        <div class="grid2" style="margin-bottom:1rem">
+          <div class="card">
+            <div class="card-title">Distribuição de proficiência</div>
+            <div class="card-sub">Histograma da taxa de acerto · barras coloridas por zona</div>
+            <div style="position:relative;height:200px"><canvas id="chart-proficiencia" role="img" aria-label="Histograma de distribuição de proficiência dos alunos por faixas de acerto">Distribuição: 0-10%: 0, 10-20%: 0, 20-30%: 2, 30-40%: 7, 40-50%: 14, 50-60%: 17, 60-70%: 23, 70-80%: 23, 80-90%: 7, 90-100%: 2.</canvas></div>
+            <div style="display:flex;gap:1rem;margin-top:.5rem;font-size:.72rem;flex-wrap:wrap">
+              <span style="display:flex;align-items:center;gap:4px;color:var(--red)"><span style="width:10px;height:10px;background:#c0392b;display:inline-block;border-radius:2px"></span>Improvável (&lt;30%)</span>
+              <span style="display:flex;align-items:center;gap:4px;color:var(--gold)"><span style="width:10px;height:10px;background:#b07d1a;display:inline-block;border-radius:2px"></span>Em risco (30–59%)</span>
+              <span style="display:flex;align-items:center;gap:4px;color:var(--grn)"><span style="width:10px;height:10px;background:#2d7a3a;display:inline-block;border-radius:2px"></span>Provável (≥60%)</span>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">Perfil médio por área — Radar</div>
+            <div class="card-sub">Média da turma vs. meta 70% para as 8 principais áreas</div>
+            <div style="position:relative;height:200px"><canvas id="chart-radar" role="img" aria-label="Gráfico radar comparando a média da turma com a meta de 70% nas principais áreas do direito">Áreas: Civil 63%, Penal 58%, Constitucional 55%, Processo 61%, Trabalho 52%, Tributário 48%, Administrativo 64%, Consumidor 67%.</canvas></div>
+            <div style="display:flex;gap:1rem;margin-top:.5rem;font-size:.72rem;flex-wrap:wrap"><span style="display:flex;align-items:center;gap:4px;color:var(--blue)"><span style="width:10px;height:10px;background:#1a5fa8;display:inline-block;border-radius:2px"></span>Média turma</span><span style="display:flex;align-items:center;gap:4px;color:var(--t3)"><span style="width:10px;height:10px;background:#8aa490;display:inline-block;border-radius:2px;opacity:.5"></span>Meta 70%</span></div>
+          </div>
+        </div>
+
+        <!-- ATIVIDADE RECENTE -->
+        <div class="card">
+          <div class="card-title">🆕 Atividade recente</div>
+          <div class="timeline"><div class="tl-item"><div class="tl-left"><div class="tl-dot red"></div><div class="tl-line"></div></div><div class="tl-body"><h5>⚠ Alerta: 11 alunos em risco crítico</h5><p>Média abaixo de 40% nos últimos 2 simulados</p><div class="tl-date">Hoje, 08:00</div></div></div><div class="tl-item"><div class="tl-left"><div class="tl-dot"></div><div class="tl-line"></div></div><div class="tl-body"><h5>Novo estudante cadastrado</h5><p>Pedro Alves · Turma 2026</p><div class="tl-date">Hoje, 10:02</div></div></div><div class="tl-item"><div class="tl-left"><div class="tl-dot blue"></div></div><div class="tl-body"><h5>Simulado concluído — 67 alunos</h5><p>Média: 63% · Melhor área: Consumidor</p><div class="tl-date">Ontem, 21:15</div></div></div></div>
+        </div>
+      </div>
+
+      <!-- ===== ADMIN PROVAS ===== -->
+      <div class="panel" id="panel-adm-provas">
+        <div class="page-title">📋 Provas &amp; Questões</div>
+        <div class="insert-tabs"><button class="insert-tab on" onclick="setInsertTab('pdf',this)">📄 Importar PDF (IA)</button><button class="insert-tab" onclick="setInsertTab('manual',this)">✏️ Inserir manualmente</button><button class="insert-tab" onclick="setInsertTab('banco',this)">🗄️ Banco de Questões</button></div>
+        <div id="tab-pdf">
+          <div class="card"><div class="card-title">Importar prova em PDF via IA</div><p style="font-size:.78rem;color:var(--t2);margin-bottom:1rem">Faça upload do PDF de uma prova. A IA extrairá automaticamente as questões, alternativas e gabaritos.</p>
+          <div class="pdf-drop-area" id="pdf-drop" onclick="document.getElementById('pdf-input').click()" ondragover="pdfDragOver(event)" ondragleave="pdfDragLeave(event)" ondrop="pdfDrop(event)"><input type="file" id="pdf-input" accept=".pdf" style="display:none" onchange="pdfSelecionado(this)"><div class="pdf-drop-icon">📄</div><div class="pdf-drop-title">Arraste o PDF ou clique para selecionar</div><div class="pdf-drop-sub">Apenas .pdf · Máx. 20 MB</div></div>
+          <div class="pdf-uploaded" id="pdf-uploaded"><span style="font-size:1.1rem">📄</span><span class="pu-name" id="pdf-nome">arquivo.pdf</span><span class="pu-remove" onclick="removerPdf()">✕ Remover</span></div>
+          <div style="display:flex;gap:.75rem;flex-wrap:wrap;margin-top:1rem;align-items:flex-end"><div class="filter-group" style="flex:1;min-width:140px"><label class="form-label">Área</label><select class="form-select" id="pdf-area"><option value="">Detectar automaticamente</option><option>Direito Civil</option><option>Direito Penal</option><option>Mista</option></select></div><div class="filter-group" style="flex:1;min-width:140px"><label class="form-label">Exame / Fonte</label><input class="form-input" id="pdf-exame" placeholder="Ex: OAB 40º · FGV"></div><div class="filter-group" style="flex:1;min-width:140px"><label class="form-label">Dificuldade</label><select class="form-select" id="pdf-dif"><option value="">Automático</option><option>Fácil</option><option>Médio</option><option>Difícil</option></select></div></div>
+          <div style="margin-top:1rem;display:flex;align-items:center;gap:.75rem"><button class="btn btn-primary" onclick="extrairQuestoesPDF()">🤖 Extrair questões com IA</button><div class="ai-loading" id="pdf-loading"><div class="dot"></div><div class="dot"></div><div class="dot"></div><span>Analisando PDF...</span></div></div></div>
+          <div id="pdf-preview" style="display:none"><div class="section-hdr"><h3>Questões extraídas</h3><div style="display:flex;gap:.5rem"><span class="tag tag-grn" id="pdf-q-count">0 questões</span><button class="btn btn-primary btn-sm" onclick="salvarQuestoesPDF()">💾 Salvar no banco</button><button class="btn btn-danger btn-sm" onclick="descartarPDF()">🗑️ Descartar</button></div></div><div id="pdf-q-list"></div></div>
+        </div>
+        <div id="tab-manual" style="display:none"><div class="card"><div class="card-title">Inserir questão manualmente</div><div class="manual-questao-form"><div class="grid2"><div class="form-row"><label class="form-label">Área *</label><select class="form-select" id="m-area"><option>Direito Civil</option><option>Direito Penal</option><option>Constitucional</option><option>Processo Civil</option><option>Trabalho</option><option>Tributário</option></select></div><div class="form-row"><label class="form-label">Exame / Fonte</label><input class="form-input" id="m-fonte" placeholder="Ex: OAB 40º · FGV · 2025"></div></div><div class="grid2"><div class="form-row"><label class="form-label">Dificuldade</label><select class="form-select" id="m-dif"><option>Fácil</option><option selected>Médio</option><option>Difícil</option></select></div><div class="form-row"><label class="form-label">Ano</label><input class="form-input" id="m-ano" placeholder="Ex: 2025" type="number"></div></div><div class="form-row"><label class="form-label">Enunciado *</label><textarea class="xl-textarea" id="m-enunciado" placeholder="Digite o enunciado completo..." style="min-height:90px"></textarea></div><div style="font-size:.75rem;font-weight:700;color:var(--tx);margin-bottom:.5rem">Alternativas <span style="font-weight:400;color:var(--t3)">(marque a correta)</span></div><div class="opcao-row"><span class="opcao-letra">A</span><input type="text" id="m-a" placeholder="Alternativa A"><input type="radio" name="m-correta" value="A" class="opcao-correta-radio"></div><div class="opcao-row"><span class="opcao-letra">B</span><input type="text" id="m-b" placeholder="Alternativa B"><input type="radio" name="m-correta" value="B" class="opcao-correta-radio"></div><div class="opcao-row"><span class="opcao-letra">C</span><input type="text" id="m-c" placeholder="Alternativa C"><input type="radio" name="m-correta" value="C" class="opcao-correta-radio"></div><div class="opcao-row"><span class="opcao-letra">D</span><input type="text" id="m-d" placeholder="Alternativa D"><input type="radio" name="m-correta" value="D" class="opcao-correta-radio"></div><div class="form-row" style="margin-top:.5rem"><label class="form-label">Comentário / Gabarito</label><textarea class="xl-textarea" id="m-comentario" style="min-height:70px" placeholder="Explique o fundamento..."></textarea></div><div style="display:flex;gap:.5rem"><button class="btn btn-primary" onclick="salvarQuestaoManual()">💾 Salvar</button><button class="btn btn-outline" onclick="limparFormManual()">Limpar</button></div></div></div></div>
+        <div id="tab-banco" style="display:none"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem"><div style="display:flex;gap:.5rem"><select class="form-select" style="width:auto" id="banco-filtro-area" onchange="renderBanco()"><option value="">Todas as áreas</option><option>Direito Civil</option><option>Direito Penal</option><option>Constitucional</option></select></div><div style="display:flex;gap:.5rem"><span class="tag tag-grn" id="banco-total-tag">0 questões</span><button class="btn btn-danger btn-sm" onclick="limparBanco()">🗑️ Limpar tudo</button></div></div><div id="banco-lista"><div style="text-align:center;color:var(--t3);padding:2rem;font-size:.82rem">Nenhuma questão inserida.</div></div></div>
+      </div>
+
+      <!-- ===== ADMIN ALUNOS + CADASTRO ===== -->
+      <div class="panel" id="panel-adm-alunos">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem">
+          <div class="page-title" style="margin-bottom:0">👥 Estudantes</div>
+          <div style="display:flex;gap:.5rem">
+            <input class="form-input" style="width:200px" id="busca-aluno" placeholder="🔍 Buscar por nome..." oninput="renderTabelaAlunos()">
+            <button class="btn btn-primary" onclick="abrirModalAluno()">+ Cadastrar estudante</button>
+          </div>
+        </div>
+        <!-- MÉTRICAS RÁPIDAS -->
+        <div class="grid4" style="margin-bottom:1rem">
+          <div class="stat-card"><div class="stat-val" id="cnt-total">4</div><div class="stat-lbl">Total de estudantes</div></div>
+          <div class="stat-card"><div class="stat-val" style="color:var(--grn)" id="cnt-ativos">3</div><div class="stat-lbl">Ativos</div></div>
+          <div class="stat-card"><div class="stat-val" style="color:var(--gold)" id="cnt-inativos">1</div><div class="stat-lbl">Inativos</div></div>
+          <div class="stat-card"><div class="stat-val" style="color:var(--blue)" id="cnt-novos">1</div><div class="stat-lbl">Cadastrados este mês</div></div>
+        </div>
+        <div class="card">
+          <table><thead><tr><th>Estudante</th><th>E-mail</th><th>Turma</th><th>Trilha</th><th>XP</th><th>Ativo em</th><th>Status</th><th></th></tr></thead>
+          <tbody id="tabela-alunos"></tbody></table>
+        </div>
+      </div>
+
+      <!-- ===== ADMIN CONTEÚDO ===== -->
+      <div class="panel" id="panel-adm-conteudo">
+        <div class="page-title">📚 Gerenciar Conteúdo</div>
+        <div style="display:flex;gap:.5rem;margin-bottom:1rem"><button class="btn btn-primary">+ Nova aula</button><button class="btn btn-outline">+ Novo flashcard</button><button class="btn btn-outline">+ Nova questão OAB</button></div>
+        <div class="card"><table><thead><tr><th>Título</th><th>Tipo</th><th>Área</th><th>Publicado</th><th></th></tr></thead><tbody><tr><td>Teoria do Negócio Jurídico</td><td><span class="tag tag-grn">Aula</span></td><td>Civil</td><td>20/05/2026</td><td><button class="btn btn-ghost btn-sm">Editar</button></td></tr><tr><td>Dolo eventual vs culpa consciente</td><td><span class="tag tag-blue">Flashcard</span></td><td>Penal</td><td>18/05/2026</td><td><button class="btn btn-ghost btn-sm">Editar</button></td></tr></tbody></table></div>
+      </div>
+
+      <!-- ===== ADMIN PEÇAS ===== -->
+      <div class="panel" id="panel-adm-pecas">
+        <div class="page-title">📝 Peças Geradas</div>
+        <div class="grid4" style="margin-bottom:1rem"><div class="stat-card"><div class="stat-val">1.843</div><div class="stat-lbl">Total</div></div><div class="stat-card"><div class="stat-val" style="color:var(--grn)">42%</div><div class="stat-lbl">Petições iniciais</div></div><div class="stat-card"><div class="stat-val" style="color:var(--blue)">28%</div><div class="stat-lbl">Recursos</div></div><div class="stat-card"><div class="stat-val" style="color:var(--gold)">30%</div><div class="stat-lbl">Outros</div></div></div>
+        <div class="card"><table><thead><tr><th>Estudante</th><th>Tipo</th><th>Área</th><th>Data</th><th></th></tr></thead><tbody><tr><td>Ana Carolina</td><td>Habeas Corpus</td><td>Penal</td><td>Hoje 09:14</td><td><button class="btn btn-ghost btn-sm">Ver</button></td></tr><tr><td>Lucas Martins</td><td>Apelação</td><td>Civil</td><td>Ontem</td><td><button class="btn btn-ghost btn-sm">Ver</button></td></tr></tbody></table></div>
+      </div>
+
+      <!-- ===== ADMIN RELATÓRIOS ===== -->
+      <div class="panel" id="panel-adm-relatorios">
+        <div class="page-title">📈 Relatórios</div>
+        <div class="grid2"><div class="card"><div class="card-title">Desempenho médio da turma</div><div style="display:flex;flex-direction:column;gap:.6rem"><div><div style="display:flex;justify-content:space-between;font-size:.78rem;margin-bottom:.25rem"><span>Direito Civil</span><span style="color:var(--grn);font-weight:700">64%</span></div><div class="progress-bar-wrap"><div class="progress-bar" style="width:64%"></div></div></div><div><div style="display:flex;justify-content:space-between;font-size:.78rem;margin-bottom:.25rem"><span>Direito Penal</span><span style="color:var(--gold);font-weight:700">51%</span></div><div class="progress-bar-wrap"><div class="progress-bar gold" style="width:51%"></div></div></div><div><div style="display:flex;justify-content:space-between;font-size:.78rem;margin-bottom:.25rem"><span>Constitucional</span><span style="color:var(--blue);font-weight:700">44%</span></div><div class="progress-bar-wrap"><div class="progress-bar blue" style="width:44%"></div></div></div></div></div><div class="card"><div class="card-title">Exportar</div><div style="display:flex;flex-direction:column;gap:.5rem"><button class="btn btn-outline">📥 CSV — Desempenho</button><button class="btn btn-outline">📥 CSV — Peças geradas</button><button class="btn btn-outline">📥 Relatório PDF</button></div></div></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+const USERS=[
+  {name:'Ana Carolina',email:'aluno@lexia.br',pass:'Aluno@2026',role:'aluno',sub:'Estudante de Direito'},
+  {name:'Admin Lexia',email:'admin@lexia.br',pass:'Admin@2026',role:'admin',sub:'Administrador'},
+  {name:'Google User',email:'google',pass:'',role:'aluno',sub:'Estudante de Direito'}
+];
+let currentUser=null;
+let bancoDB=[];
+let qIdxAtual=0;
+const AVATAR_COLORS=['#2d7a3a','#1a5fa8','#b07d1a','#c0392b','#6b46b0','#c25a00'];
+
+let alunosDB=[
+  {id:1,nome:'Ana Carolina',email:'ana@lexia.br',cpf:'111.222.333-44',tel:'(11) 91111-1111',turma:'Turma 2026 — 1º período',trilha:'Direito Civil',xp:1240,ativo:'Hoje',status:'ativo',obs:''},
+  {id:2,nome:'Lucas Martins',email:'lucas@lexia.br',cpf:'222.333.444-55',tel:'(11) 92222-2222',turma:'Turma 2026 — 1º período',trilha:'Direito Penal',xp:980,ativo:'Ontem',status:'ativo',obs:''},
+  {id:3,nome:'Pedro Alves',email:'pedro@lexia.br',cpf:'333.444.555-66',tel:'(11) 93333-3333',turma:'Turma 2026 — 1º período',trilha:'Constitucional',xp:120,ativo:'Hoje',status:'ativo',obs:'Novo aluno'},
+  {id:4,nome:'Carla Rocha',email:'carla@lexia.br',cpf:'444.555.666-77',tel:'(11) 94444-4444',turma:'Turma 2025 — 2º período',trilha:'Processo Civil',xp:340,ativo:'22/05',status:'inativo',obs:''},
+];
+let editandoAlunoId=null;
+let nextAlunoId=5;
+
+const questoesDemo=[
+  {area:'Direito Civil',ref:'OAB 38º · FGV',dif:'Médio',enunciado:'João celebrou contrato de compra e venda de imóvel com Maria. Após a assinatura, mas antes do registro, João faleceu. Seus herdeiros pretendem registrar o imóvel. Assinale a alternativa correta:',opts:['A) O contrato é nulo, pois João faleceu antes do registro.','B) Os herdeiros não têm legitimidade para registrar o imóvel.','C) O contrato é válido e os herdeiros podem requerer o registro, pois o direito integrou o patrimônio do de cujus.','D) Depende de nova manifestação de vontade dos herdeiros para ratificação do contrato.'],correta:2,comentario:'O contrato válido integrou o patrimônio de João em vida. Os herdeiros sucedem em todos os direitos e obrigações (art. 1.784 CC — princípio da saisine).'},
+  {area:'Direito Penal',ref:'OAB 39º · FGV',dif:'Difícil',enunciado:'Carlos, dirigindo em alta velocidade, avança o sinal vermelho e atropela um pedestre. Considerando que Carlos previu o resultado como possível mas assumiu o risco de produzi-lo, assinale a alternativa correta:',opts:['A) Carlos agiu com culpa consciente, respondendo por homicídio culposo.','B) Carlos agiu com dolo eventual, podendo responder por homicídio doloso.','C) Carlos agiu com imprudência, respondendo por lesão corporal culposa.','D) Carlos não responde criminalmente por ausência de dolo.'],correta:1,comentario:'Dolo eventual: o agente prevê o resultado e assume o risco de produzi-lo (art. 18, I, CP).'},
+  {area:'Constitucional',ref:'OAB 37º · FGV',dif:'Fácil',enunciado:'Sobre as cláusulas pétreas previstas no art. 60, §4º da CF/88, é correto afirmar que:',opts:['A) A forma republicana de governo é cláusula pétrea.','B) O voto direto, secreto, universal e periódico não pode ser objeto de emenda tendente à abolição.','C) O bicameralismo é cláusula pétrea.','D) A separação de Poderes pode ser abolida por emenda aprovada por 3/5 em dois turnos.'],correta:1,comentario:'Art. 60, §4º, CF: são cláusulas pétreas: forma federativa, voto direto/secreto/universal/periódico, separação dos Poderes e direitos e garantias individuais.'},
+  {area:'Processo Civil',ref:'OAB 40º · FGV',dif:'Médio',enunciado:'Sobre a tutela de evidência no CPC/2015, assinale a alternativa correta:',opts:['A) Exige demonstração de perigo de dano.','B) Pode ser concedida independentemente de urgência quando houver abuso do direito de defesa.','C) Somente pode ser concedida em caráter liminar.','D) É espécie de tutela cautelar.'],correta:1,comentario:'Art. 311, CPC: a tutela de evidência é cabível independentemente de urgência quando há abuso do direito de defesa.'},
+];
+let questoesFiltradas=[...questoesDemo];
+
+/* ===== AUTH ===== */
+function setLoginTab(tab,el){document.querySelectorAll('.login-tab').forEach(t=>t.classList.remove('on'));el.classList.add('on');}
+function fillDemo(r){if(r==='aluno'){document.getElementById('login-email').value='aluno@lexia.br';document.getElementById('login-pass').value='Aluno@2026';}else{document.getElementById('login-email').value='admin@lexia.br';document.getElementById('login-pass').value='Admin@2026';}}
+function tryLogin(){const em=document.getElementById('login-email').value.trim(),pw=document.getElementById('login-pass').value,e=document.getElementById('login-err'),u=USERS.find(x=>x.email===em&&x.pass===pw);if(!u){e.style.display='block';e.textContent='E-mail ou senha inválidos.';return;}e.style.display='none';doLogin(u);}
+function doLogin(u){
+  currentUser=u;
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app-screen').style.display='flex';
+  document.getElementById('tb-uname').textContent=u.name;
+  document.getElementById('tb-urole').textContent=u.sub;
+  document.getElementById('tb-uavatar').textContent=u.name.charAt(0);
+  const isAdmin=u.role==='admin';
+  document.getElementById('sb-aluno').style.display=isAdmin?'none':'block';
+  document.getElementById('sb-admin').style.display=isAdmin?'block':'none';
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+  if(isAdmin){
+    document.getElementById('panel-adm-dash').classList.add('on');
+    document.getElementById('tb-breadcrumb').textContent='Analytics';
+    document.querySelectorAll('#sb-admin .sb-item').forEach(b=>b.classList.toggle('on',b.dataset.panel==='adm-dash'));
+    setTimeout(initCharts,200);
+  } else {
+    document.getElementById('panel-dash').classList.add('on');
+    const first=u.name.split(' ')[0];
+    document.getElementById('dash-greeting').textContent='Olá, '+first+'! 👋';
+    document.getElementById('dash-avatar').textContent=u.name.charAt(0);
+    if(document.getElementById('perfil-av'))document.getElementById('perfil-av').textContent=u.name.charAt(0);
+    if(document.getElementById('perfil-nome'))document.getElementById('perfil-nome').textContent=u.name;
+    document.getElementById('tb-breadcrumb').textContent='Dashboard';
+    document.querySelectorAll('#sb-aluno .sb-item').forEach(b=>b.classList.toggle('on',b.dataset.panel==='dash'));
+    renderQuestaoAtual();
+  }
+  renderTabelaAlunos();
+}
+function doLogout(){currentUser=null;document.getElementById('app-screen').style.display='none';document.getElementById('login-screen').style.display='flex';document.getElementById('login-email').value='';document.getElementById('login-pass').value='';}
+
+/* ===== NAVEGAÇÃO ===== */
+function showPanel(id,el){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+  const p=document.getElementById('panel-'+id);if(p)p.classList.add('on');
+  const labels={dash:'Dashboard',trilhas:'Trilhas de Estudo',flashcards:'Flashcards',questoes:'Questões OAB',pecas:'Gerador de Peças',juris:'Jurisprudência IA',resumos:'Resumos Automáticos',simulado:'Simulado OAB',perfil:'Perfil & XP',certificados:'Certificados','adm-dash':'Analytics','adm-provas':'Provas & Questões','adm-alunos':'Estudantes','adm-conteudo':'Conteúdo','adm-pecas':'Peças Geradas','adm-relatorios':'Relatórios'};
+  document.getElementById('tb-breadcrumb').textContent=labels[id]||id;
+  document.querySelectorAll('.sb-item').forEach(b=>b.classList.toggle('on',b.dataset.panel===id));
+  if(id==='adm-dash')setTimeout(initCharts,200);
+}
+
+/* ===== UTILS ===== */
+function notify(msg,type='ok'){const n=document.getElementById('notify');n.textContent=msg;n.className='notify '+type+' show';setTimeout(()=>n.classList.remove('show'),2500);}
+function toggleChip(el){el.classList.toggle('on')}
+function copiarTexto(id){navigator.clipboard.writeText(document.getElementById(id).textContent).then(()=>notify('Copiado!','ok')).catch(()=>notify('Erro.','err'));}
+async function callAI(system,user,tokens=1000){const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:tokens,system,messages:[{role:'user',content:user}]})});const d=await r.json();return d.content?.map(i=>i.text||'').join('\n')||'Sem resposta.';}
+
+/* ===== CHARTS ===== */
+let chartsInit=false;
+function initCharts(){
+  if(chartsInit)return;chartsInit=true;
+  /* Trajetória */
+  new Chart(document.getElementById('chart-trajetoria'),{
+    type:'line',
+    data:{
+      labels:['Fev','Mar','Abr','Mai','Jun(p)','Nov(p)'],
+      datasets:[
+        {label:'Mediana real',data:[38,44,46,49,null,null],borderColor:'#1a5fa8',backgroundColor:'rgba(26,95,168,.08)',tension:.3,pointRadius:4,pointBackgroundColor:'#1a5fa8',spanGaps:false},
+        {label:'Projeção',data:[null,null,null,49,53,67],borderColor:'#1a5fa8',borderDash:[6,4],backgroundColor:'transparent',tension:.3,pointRadius:4,pointBackgroundColor:'#1a5fa8',pointStyle:'circle',spanGaps:true},
+        {label:'Meta 70%',data:[70,70,70,70,70,70],borderColor:'#c0392b',borderDash:[4,3],backgroundColor:'transparent',pointRadius:0,borderWidth:1.5}
+      ]
+    },
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{min:0,max:100,ticks:{callback:v=>v+'%',font:{size:10}},grid:{color:'rgba(0,0,0,.06)'}},x:{ticks:{font:{size:10}},grid:{display:false}}}}
+  });
+  /* Proficiência */
+  const pColors=['#f5f7f5','#f5f7f5','#c0392b','#b07d1a','#b07d1a','#b07d1a','#2d7a3a','#2d7a3a','#2d7a3a','#2d7a3a'];
+  new Chart(document.getElementById('chart-proficiencia'),{
+    type:'bar',
+    data:{labels:['0–10%','10–20%','20–30%','30–40%','40–50%','50–60%','60–70%','70–80%','80–90%','90–100%'],datasets:[{label:'Alunos',data:[0,0,2,7,14,17,23,23,7,2],backgroundColor:pColors,borderRadius:3,borderWidth:0}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{font:{size:10}},grid:{color:'rgba(0,0,0,.06)'}},x:{ticks:{font:{size:9},maxRotation:45},grid:{display:false}}}}
+  });
+  /* Radar */
+  new Chart(document.getElementById('chart-radar'),{
+    type:'radar',
+    data:{labels:['Civil','Penal','Const.','Processo','Trabalho','Tributário','Adm.','Consumidor'],datasets:[
+      {label:'Média turma',data:[63,58,55,61,52,48,64,67],borderColor:'#1a5fa8',backgroundColor:'rgba(26,95,168,.12)',pointBackgroundColor:'#1a5fa8',pointRadius:3},
+      {label:'Meta 70%',data:[70,70,70,70,70,70,70,70],borderColor:'#8aa490',borderDash:[4,3],backgroundColor:'rgba(138,164,144,.06)',pointRadius:0}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{r:{min:0,max:100,ticks:{stepSize:25,font:{size:9}},grid:{color:'rgba(0,0,0,.08)'},pointLabels:{font:{size:9}}}}}
+  });
+}
+
+/* ===== QUESTÕES ===== */
+function aplicarFiltros(){const area=document.getElementById('q-filtro-area').value.toLowerCase(),exame=document.getElementById('q-filtro-exame').value,dif=document.getElementById('q-filtro-dif').value.toLowerCase();questoesFiltradas=questoesDemo.filter(q=>{const aOk=!area||q.area.toLowerCase().includes(area);const eOk=!exame||q.ref.includes(exame+'º');const dOk=!dif||q.dif.toLowerCase()===dif;return aOk&&eOk&&dOk;});if(!questoesFiltradas.length)questoesFiltradas=[...questoesDemo];qIdxAtual=0;document.getElementById('q-banco-count').textContent=questoesFiltradas.length;renderQuestaoAtual();}
+function limparFiltros(){['q-filtro-area','q-filtro-exame','q-filtro-inst','q-filtro-dif'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});questoesFiltradas=[...questoesDemo];qIdxAtual=0;document.getElementById('q-banco-count').textContent=questoesFiltradas.length;renderQuestaoAtual();}
+function renderQuestaoAtual(){const q=questoesFiltradas[qIdxAtual];if(!q)return;document.getElementById('q-tag-area').textContent=q.area;document.getElementById('q-tag-dif').textContent=q.dif;document.getElementById('q-tag-ref').textContent=q.ref;document.getElementById('q-enunciado').textContent=q.enunciado;const el=document.getElementById('questao-options');el.innerHTML=q.opts.map((o,i)=>`<button class="btn btn-outline" style="text-align:left;justify-content:flex-start" onclick="responderQ(this,${i===q.correta},'${q.comentario.replace(/'/g,"\\'")}','${q.opts[q.correta].replace(/'/g,"\\'")}' )">${o}</button>`).join('');document.getElementById('questao-feedback').style.display='none';document.getElementById('q-idx-atual').textContent=qIdxAtual+1;document.getElementById('q-idx-total').textContent=questoesFiltradas.length;document.getElementById('q-btn-prev').disabled=qIdxAtual===0;document.getElementById('q-btn-next').disabled=qIdxAtual===questoesFiltradas.length-1;}
+function navegarQuestao(dir){const n=qIdxAtual+dir;if(n<0||n>=questoesFiltradas.length)return;qIdxAtual=n;renderQuestaoAtual();}
+function responderQ(btn,correta,comentario,textoCorreta){document.querySelectorAll('#questao-options button').forEach(b=>{b.disabled=true;b.style.opacity='.6';});btn.style.opacity='1';if(correta){btn.style.background='var(--grn-l)';btn.style.borderColor='var(--grn)';btn.style.color='var(--grn)';}else{btn.style.background='var(--red-l)';btn.style.borderColor='var(--red)';btn.style.color='var(--red)';}const fb=document.getElementById('questao-feedback');fb.style.display='block';if(correta){fb.style.background='var(--grn-l)';fb.style.border='1px solid var(--bd2)';fb.innerHTML=`<strong style="color:var(--grn)">✓ Correto!</strong> ${comentario}`;}else{fb.style.background='var(--red-l)';fb.style.border='1px solid var(--red)';fb.innerHTML=`<strong style="color:var(--red)">✗ Incorreto.</strong> Correta: <em>${textoCorreta}</em>. ${comentario}`;}}
+
+/* ===== FLASHCARDS ===== */
+function filtrarFC(area,el){document.querySelectorAll('.area-chip').forEach(c=>c.classList.remove('on'));el.classList.add('on');document.querySelectorAll('#fc-grid .flash-card').forEach(fc=>{fc.style.display=(area==='todos'||fc.dataset.area===area)?'':'none';});}
+async function gerarFlashcardIA(){const area=document.getElementById('fc-gen-area').value,tema=document.getElementById('fc-gen-tema').value.trim(),ld=document.getElementById('fc-loading');ld.style.display='flex';try{const raw=await callAI('Retorne APENAS JSON válido sem markdown. Formato: {"area":"Civil","data-area":"civil","pergunta":"...","resposta":"..."}. O campo data-area deve ser kebab-case.','Gere um flashcard de '+(area==='aleatório'?'direito aleatório':area)+(tema?' sobre: '+tema:'')+'.');const fc=JSON.parse(raw.replace(/```json|```/g,'').trim());const grid=document.getElementById('fc-grid');const div=document.createElement('div');div.className='flash-card';div.dataset.area=fc['data-area']||'civil';div.onclick=function(){this.classList.toggle('revealed')};const tagColor=fc.area==='Civil'?'tag-grn':fc.area==='Penal'?'tag-red':fc.area==='Constitucional'?'tag-blue':fc.area==='Processo Civil'?'tag-pur':'tag-gold';div.innerHTML=`<span class="tag ${tagColor}" style="margin-bottom:.5rem">${fc.area||area}</span><div class="fc-q">${fc.pergunta}</div><div class="fc-a">${fc.resposta}</div><div class="fc-hint">Toque para revelar ↩</div>`;grid.prepend(div);notify('Flashcard adicionado!','ok');}catch(e){notify('Erro ao gerar flashcard.','err');}ld.style.display='none';}
+
+/* ===== PEÇAS ===== */
+let pecaSelecionada='';
+function selecionarPeca(tipo){pecaSelecionada=tipo;const nomes={peticao:'Petição Inicial',recurso:'Recurso',contrato:'Contrato',habeas:'Habeas Corpus'};document.getElementById('peca-form-title').textContent='📝 Configurar: '+nomes[tipo];document.getElementById('peca-form').style.display='block';document.getElementById('peca-result').style.display='none';document.getElementById('peca-actions').style.display='none';}
+async function gerarPeca(){const area=document.getElementById('peca-area').value,tribunal=document.getElementById('peca-tribunal').value,partes=document.getElementById('peca-partes').value,fatos=document.getElementById('peca-fatos').value.trim();if(!fatos){notify('Descreva os fatos.','err');return;}const nomes={peticao:'Petição Inicial',recurso:'Recurso',contrato:'Contrato',habeas:'Habeas Corpus'};const tipo=nomes[pecaSelecionada]||'Peça';const ld=document.getElementById('peca-loading'),res=document.getElementById('peca-result');ld.style.display='flex';res.style.display='none';try{const txt=await callAI('Você é um advogado experiente e professor de direito. Gere peças jurídicas completas para fins educacionais.',`Gere uma ${tipo} de ${area}.\nTribunal: ${tribunal||'não especificado'}\nPartes: ${partes||'não especificado'}\nFatos: ${fatos}`);res.textContent=txt;res.style.display='block';document.getElementById('peca-actions').style.display='flex';}catch(e){res.textContent='Erro.';res.style.display='block';}ld.style.display='none';}
+
+/* ===== JURISPRUDÊNCIA ===== */
+async function pesquisarJuris(){const q=document.getElementById('juris-query').value.trim();if(!q){notify('Informe o tema.','err');return;}const ld=document.getElementById('juris-loading'),res=document.getElementById('juris-results');ld.style.display='flex';res.style.display='none';try{const raw=await callAI('Retorne APENAS JSON válido. Formato: {"total":3,"julgados":[{"tribunal":"STJ","numero":"REsp 1234567/SP","data":"2023","relator":"Min. Nome","ementa":"resumo","tese":"tese"}]}','Pesquise jurisprudência brasileira sobre: '+q);let parsed;try{parsed=JSON.parse(raw.replace(/```json|```/g,'').trim());}catch{parsed={total:0,julgados:[]};}document.getElementById('juris-count').textContent=(parsed.total||0)+' julgados';document.getElementById('juris-list').innerHTML=(parsed.julgados||[]).map(j=>`<div class="juris-item"><h5>${j.tribunal} · ${j.numero} · Rel. ${j.relator||''}</h5><p>${j.ementa}</p><p style="margin-top:.35rem;color:var(--grn)"><strong>Tese:</strong> ${j.tese}</p></div>`).join('');res.style.display='block';}catch(e){notify('Erro.','err');}ld.style.display='none';}
+async function enviarChat(){const input=document.getElementById('juris-chat-input'),msg=input.value.trim();if(!msg)return;const chat=document.getElementById('juris-chat'),now=new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});chat.innerHTML+=`<div class="chat-msg user"><div class="chat-bubble">${msg}</div><div class="chat-time">${now}</div></div>`;input.value='';chat.scrollTop=chat.scrollHeight;const el=document.createElement('div');el.className='chat-msg ai';el.innerHTML='<div class="chat-bubble" style="color:var(--t3)">Analisando...</div>';chat.appendChild(el);chat.scrollTop=chat.scrollHeight;try{const txt=await callAI('Assistente jurídico especializado em direito brasileiro. Responda de forma clara e técnica. Máximo 3 parágrafos.',msg);el.innerHTML=`<div class="chat-bubble">${txt.replace(/\n/g,'<br>')}</div><div class="chat-time">${now}</div>`;}catch{el.innerHTML='<div class="chat-bubble" style="color:var(--red)">Erro.</div>';}chat.scrollTop=chat.scrollHeight;}
+
+/* ===== RESUMOS ===== */
+async function gerarResumo(){const tema=document.getElementById('resumo-tema').value.trim();if(!tema){notify('Informe o tema.','err');return;}const ld=document.getElementById('resumo-loading'),res=document.getElementById('resumo-result');ld.style.display='flex';res.style.display='none';try{const txt=await callAI('Professor de direito. Gere resumos jurídicos didáticos com base doutrinária, dispositivos legais e pontos para a OAB.','Resumo completo sobre: '+tema);res.textContent=txt;res.style.display='block';document.getElementById('resumo-actions').style.display='block';}catch{res.textContent='Erro.';res.style.display='block';}ld.style.display='none';}
+
+/* ===== ADMIN PDF ===== */
+function setInsertTab(tab,el){document.querySelectorAll('.insert-tab').forEach(t=>t.classList.remove('on'));el.classList.add('on');['tab-pdf','tab-manual','tab-banco'].forEach(id=>document.getElementById(id).style.display='none');document.getElementById('tab-'+tab).style.display='block';if(tab==='banco')renderBanco();}
+function pdfDragOver(e){e.preventDefault();document.getElementById('pdf-drop').classList.add('dragover');}
+function pdfDragLeave(){document.getElementById('pdf-drop').classList.remove('dragover');}
+function pdfDrop(e){e.preventDefault();document.getElementById('pdf-drop').classList.remove('dragover');const f=e.dataTransfer.files[0];if(f&&f.type==='application/pdf')mostrarPdfSelecionado(f);else notify('Selecione .pdf','err');}
+function pdfSelecionado(input){const f=input.files[0];if(f)mostrarPdfSelecionado(f);}
+function mostrarPdfSelecionado(f){document.getElementById('pdf-nome').textContent=f.name;document.getElementById('pdf-uploaded').style.display='flex';document.getElementById('pdf-preview').style.display='none';}
+function removerPdf(){document.getElementById('pdf-input').value='';document.getElementById('pdf-uploaded').style.display='none';document.getElementById('pdf-preview').style.display='none';}
+async function extrairQuestoesPDF(){const nomeEl=document.getElementById('pdf-nome');if(!document.getElementById('pdf-input').files.length&&nomeEl.textContent==='arquivo.pdf'){notify('Selecione um PDF.','err');return;}const area=document.getElementById('pdf-area').value||'Mista',exame=document.getElementById('pdf-exame').value||'OAB',dif=document.getElementById('pdf-dif').value||'Médio',ld=document.getElementById('pdf-loading');ld.style.display='flex';try{const raw=await callAI('Retorne APENAS JSON. Formato: {"questoes":[{"area":"Direito Civil","enunciado":"...","opcoes":["A) ...","B) ...","C) ...","D) ..."],"correta":0,"comentario":"...","dificuldade":"Médio"}]}. Gere 3 questões jurídicas realistas.','Extraia questões do PDF de '+area+'. Exame: '+exame+'. Dificuldade: '+dif,800);let parsed;try{parsed=JSON.parse(raw.replace(/```json|```/g,'').trim());}catch{parsed={questoes:[]};}const qs=parsed.questoes||[];document.getElementById('pdf-q-count').textContent=qs.length+' questões';document.getElementById('pdf-q-list').innerHTML=qs.map((q,i)=>`<div class="banco-questao-item"><div class="bqi-num">${i+1}</div><div class="bqi-body"><p>${q.enunciado}</p><div class="bqi-meta"><span class="tag tag-grn">${q.area}</span><span class="tag tag-gold">${q.dificuldade||dif}</span><span class="tag tag-gray">${exame}</span></div></div></div>`).join('');document.getElementById('pdf-preview').style.display='block';window._pdfQuestoes=qs.map(q=>({...q,ref:exame}));}catch{notify('Erro ao extrair.','err');}ld.style.display='none';}
+function salvarQuestoesPDF(){if(window._pdfQuestoes?.length){bancoDB.push(...window._pdfQuestoes);notify(window._pdfQuestoes.length+' questões salvas!','ok');document.getElementById('pdf-preview').style.display='none';removerPdf();renderBanco();}}
+function descartarPDF(){document.getElementById('pdf-preview').style.display='none';window._pdfQuestoes=[];}
+function salvarQuestaoManual(){const en=document.getElementById('m-enunciado').value.trim(),a=document.getElementById('m-a').value.trim(),b=document.getElementById('m-b').value.trim(),c=document.getElementById('m-c').value.trim(),d=document.getElementById('m-d').value.trim(),correta=document.querySelector('input[name="m-correta"]:checked');if(!en||!a||!b||!c||!d){notify('Preencha enunciado e alternativas.','err');return;}if(!correta){notify('Marque a alternativa correta.','err');return;}bancoDB.push({area:document.getElementById('m-area').value,ref:document.getElementById('m-fonte').value,dificuldade:document.getElementById('m-dif').value,enunciado:en,opcoes:['A) '+a,'B) '+b,'C) '+c,'D) '+d],correta:['A','B','C','D'].indexOf(correta.value),comentario:document.getElementById('m-comentario').value});notify('Questão salva!','ok');limparFormManual();renderBanco();}
+function limparFormManual(){['m-enunciado','m-a','m-b','m-c','m-d','m-comentario','m-fonte','m-ano'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});document.querySelectorAll('input[name="m-correta"]').forEach(r=>r.checked=false);}
+function renderBanco(){const filtro=document.getElementById('banco-filtro-area')?document.getElementById('banco-filtro-area').value:'';const lista=filtro?bancoDB.filter(q=>q.area===filtro):bancoDB;document.getElementById('banco-total-tag').textContent=bancoDB.length+' questões';const el=document.getElementById('banco-lista');if(!lista.length){el.innerHTML='<div style="text-align:center;color:var(--t3);padding:2rem;font-size:.82rem">Nenhuma questão inserida.</div>';return;}el.innerHTML=lista.map((q,i)=>`<div class="banco-questao-item"><div class="bqi-num">${i+1}</div><div class="bqi-body"><p>${q.enunciado}</p><div class="bqi-meta"><span class="tag tag-grn">${q.area}</span><span class="tag tag-gold">${q.dificuldade||'—'}</span>${q.ref?`<span class="tag tag-gray">${q.ref}</span>`:''}</div></div><button class="btn btn-danger btn-sm" onclick="removerQuestao(${bancoDB.indexOf(q)})">✕</button></div>`).join('');}
+function removerQuestao(idx){bancoDB.splice(idx,1);notify('Removida.','ok');renderBanco();}
+function limparBanco(){if(confirm('Limpar todo o banco?')){bancoDB=[];notify('Banco limpo.','ok');renderBanco();}}
+
+/* ===== ALUNOS CRUD ===== */
+function abrirModalAluno(id=null){
+  editandoAlunoId=id;
+  const modal=document.getElementById('modal-aluno');
+  document.getElementById('modal-err').style.display='none';
+  if(id){
+    const a=alunosDB.find(x=>x.id===id);if(!a)return;
+    document.getElementById('modal-aluno-title').textContent='Editar estudante';
+    document.getElementById('btn-salvar-aluno').textContent='💾 Salvar alterações';
+    document.getElementById('a-nome').value=a.nome;
+    document.getElementById('a-email').value=a.email;
+    document.getElementById('a-cpf').value=a.cpf||'';
+    document.getElementById('a-tel').value=a.tel||'';
+    document.getElementById('a-turma').value=a.turma||'';
+    document.getElementById('a-trilha').value=a.trilha||'Direito Civil';
+    document.getElementById('a-senha').value='';
+    document.getElementById('a-status').value=a.status||'ativo';
+    document.getElementById('a-obs').value=a.obs||'';
+  } else {
+    document.getElementById('modal-aluno-title').textContent='Cadastrar novo estudante';
+    document.getElementById('btn-salvar-aluno').textContent='💾 Cadastrar estudante';
+    ['a-nome','a-email','a-cpf','a-tel','a-senha','a-obs'].forEach(id=>{document.getElementById(id).value='';});
+    document.getElementById('a-turma').value='';
+    document.getElementById('a-trilha').value='Direito Civil';
+    document.getElementById('a-status').value='ativo';
+  }
+  modal.classList.add('show');
+}
+function fecharModal(){document.getElementById('modal-aluno').classList.remove('show');}
+function salvarAluno(){
+  const nome=document.getElementById('a-nome').value.trim(),email=document.getElementById('a-email').value.trim(),senha=document.getElementById('a-senha').value,errEl=document.getElementById('modal-err');
+  if(!nome||!email){errEl.style.display='block';errEl.textContent='Nome e e-mail são obrigatórios.';return;}
+  if(!editandoAlunoId&&!senha){errEl.style.display='block';errEl.textContent='Defina uma senha inicial.';return;}
+  if(senha&&senha.length<8&&!editandoAlunoId){errEl.style.display='block';errEl.textContent='Senha deve ter pelo menos 8 caracteres.';return;}
+  errEl.style.display='none';
+  const dados={nome,email,cpf:document.getElementById('a-cpf').value,tel:document.getElementById('a-tel').value,turma:document.getElementById('a-turma').value,trilha:document.getElementById('a-trilha').value,status:document.getElementById('a-status').value,obs:document.getElementById('a-obs').value,ativo:'Hoje'};
+  if(editandoAlunoId){
+    const idx=alunosDB.findIndex(x=>x.id===editandoAlunoId);
+    if(idx>=0)alunosDB[idx]={...alunosDB[idx],...dados};
+    notify('Estudante atualizado!','ok');
+  } else {
+    alunosDB.push({id:nextAlunoId++,xp:0,...dados});
+    notify('Estudante cadastrado!','ok');
+  }
+  fecharModal();renderTabelaAlunos();
+}
+function removerAluno(id){if(confirm('Remover este estudante?')){alunosDB=alunosDB.filter(a=>a.id!==id);notify('Estudante removido.','ok');renderTabelaAlunos();}}
+function renderTabelaAlunos(){
+  const busca=(document.getElementById('busca-aluno')?.value||'').toLowerCase();
+  const lista=busca?alunosDB.filter(a=>a.nome.toLowerCase().includes(busca)||a.email.toLowerCase().includes(busca)):alunosDB;
+  const ativos=alunosDB.filter(a=>a.status==='ativo').length;
+  const inativos=alunosDB.filter(a=>a.status!=='ativo').length;
+  document.getElementById('cnt-total').textContent=alunosDB.length;
+  document.getElementById('cnt-ativos').textContent=ativos;
+  document.getElementById('cnt-inativos').textContent=inativos;
+  document.getElementById('cnt-novos').textContent=alunosDB.filter(a=>a.ativo==='Hoje'||a.ativo==='Ontem').length;
+  const tb=document.getElementById('tabela-alunos');
+  if(!lista.length){tb.innerHTML='<tr><td colspan="8" style="text-align:center;color:var(--t3);padding:1.5rem">Nenhum estudante encontrado.</td></tr>';return;}
+  tb.innerHTML=lista.map(a=>{
+    const cor=AVATAR_COLORS[a.id%AVATAR_COLORS.length];
+    const ini=a.nome.split(' ').map(p=>p[0]).slice(0,2).join('');
+    const statusTag=a.status==='ativo'?'<span class="tag tag-grn">Ativo</span>':a.status==='pendente'?'<span class="tag tag-gold">Pendente</span>':'<span class="tag tag-gray">Inativo</span>';
+    return `<tr>
+      <td><div style="display:flex;align-items:center;gap:.5rem"><div class="aluno-avatar" style="background:${cor}">${ini}</div><div><div style="font-size:.82rem;font-weight:600">${a.nome}</div><div style="font-size:.72rem;color:var(--t3)">${a.cpf||'—'}</div></div></div></td>
+      <td>${a.email}</td>
+      <td style="font-size:.75rem">${a.turma||'—'}</td>
+      <td><span class="tag tag-blue" style="font-size:.7rem">${a.trilha||'—'}</span></td>
+      <td style="font-weight:600">${a.xp||0}</td>
+      <td style="font-size:.75rem;color:var(--t3)">${a.ativo||'—'}</td>
+      <td>${statusTag}</td>
+      <td><div style="display:flex;gap:.3rem"><button class="btn btn-ghost btn-sm" onclick="abrirModalAluno(${a.id})">✏️</button><button class="btn btn-ghost btn-sm" onclick="removerAluno(${a.id})" style="color:var(--red)">🗑️</button></div></td>
+    </tr>`;
+  }).join('');
+}
+</script>
+</body>
+</html>
