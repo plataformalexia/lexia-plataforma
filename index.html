@@ -66,7 +66,12 @@ let estudantes=[
 {nome:'Ana Carolina',email:'ana@lexia.br',doc:'111.222.333-44',turma:'Turma 2026 — 1º período',trilha:'Direito Civil',xp:1240,atividade:'Hoje',status:'Ativo',color:'#168047'},
 {nome:'Lucas Martins',email:'lucas@lexia.br',doc:'222.333.444-55',turma:'Turma 2026 — 1º período',trilha:'Direito Penal',xp:980,atividade:'Ontem',status:'Ativo',color:'#a66a00'},
 {nome:'Pedro Alves',email:'pedro@lexia.br',doc:'333.444.555-66',turma:'Turma 2026 — 1º período',trilha:'Constitucional',xp:120,atividade:'Hoje',status:'Ativo',color:'#c0392b'},
-{nome:'Carla Rocha',email:'carla@lexia.br',doc:'444.555.666-77',turma:'Turma 2025 — 2º período',trilha:'Processo Civil',xp:340,atividade:'22/05',status:'Inativo',color:'#633ca0'}];
+{nome:'Carla Rocha',email:'carla@lexia.br',doc:'444.555.666-77',turma:'Turma 2025 — 2º período',trilha:'Processo Civil',xp:340,atividade:'22/05',status:'Inativo',color:'#633ca0'},
+{nome:'Anna Soares',email:'annasoares.naomaispelo@gmail.com',doc:'Cadastro por e-mail',turma:'Turma 2026 — 1º período',trilha:'A definir pelo desempenho',xp:0,atividade:'Hoje',status:'Ativo',color:'#1a4f8a'},
+{nome:'Carlos Mathues',email:'carlosmathues144@gmail.com',doc:'Cadastro por e-mail',turma:'Turma 2026 — 1º período',trilha:'A definir pelo desempenho',xp:0,atividade:'Hoje',status:'Ativo',color:'#1a7a3a'},
+{nome:'Miranda',email:'miranda@brunomiranda.io',doc:'Cadastro por e-mail',turma:'Turma 2026 — 1º período',trilha:'A definir pelo desempenho',xp:0,atividade:'Hoje',status:'Ativo',color:'#5a3690'},
+{nome:'Vinicius Almeida',email:'advogado.viniciusalmeida@outlook.com',doc:'Cadastro por e-mail',turma:'Turma 2026 — 1º período',trilha:'A definir pelo desempenho',xp:0,atividade:'Hoje',status:'Ativo',color:'#b03020'},
+{nome:'Volgarib',email:'volgarib@gmail.com',doc:'Cadastro por e-mail',turma:'Turma 2026 — 1º período',trilha:'A definir pelo desempenho',xp:0,atividade:'Hoje',status:'Ativo',color:'#8a6010'}];
 const professoresPadraoAcesso=[
 {nome:'Mariana Castro',email:'professor@lexia.br',materia:'Direito Civil',turma:'Turma 2026',status:'Ativo',cadastro:'26/05/2026',ultimo:'Hoje',color:'#1a4f8a'},
 {nome:'Rafael Nunes',email:'rafael.nunes@lexia.br',materia:'Direito Penal',turma:'Turma 2026',status:'Ativo',cadastro:'25/05/2026',ultimo:'Ontem',color:'#b03020'},
@@ -328,7 +333,8 @@ const firebaseConfig = {
 };
 const lexiaAuthRules = {
   coordenadorEmails: ["coordenador@lexia.br","plataformalexia@gmail.com.br","plataformalexia@gmail.com","brunofelipe.oem@gmail.com"],
-  professorEmails: ["professor@lexia.br","bruno_miranda88@hotmail.com"]
+  professorEmails: ["professor@lexia.br","bruno_miranda88@hotmail.com"],
+  estudanteEmails: ["annasoares.naomaispelo@gmail.com","carlosmathues144@gmail.com","miranda@brunomiranda.io","advogado.viniciusalmeida@outlook.com","volgarib@gmail.com"]
 };
 const firebaseSdkVersion = "12.7.0";
 function firebaseIsConfigured(){
@@ -339,6 +345,7 @@ function roleForGoogleEmail(email){
   if(lexiaAuthRules.coordenadorEmails.map(e=>e.toLowerCase()).includes(normalized))return "coord";
   const professoresCadastrados = window.getProfessoresAcessoEmails ? window.getProfessoresAcessoEmails() : [];
   if([...lexiaAuthRules.professorEmails,...professoresCadastrados].map(e=>e.toLowerCase()).includes(normalized))return "professor";
+  if(lexiaAuthRules.estudanteEmails.map(e=>e.toLowerCase()).includes(normalized))return "aluno";
   return "aluno";
 }
 async function getFirebaseAuth(){
