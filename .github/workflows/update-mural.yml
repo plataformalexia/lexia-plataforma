@@ -1,0 +1,42 @@
+name: Atualizar mural juridico
+
+on:
+  schedule:
+    # 07:30 no horario de Brasilia (UTC-3).
+    - cron: "30 10 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: atualizar-mural-juridico
+  cancel-in-progress: false
+
+jobs:
+  update-mural:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Atualizar mural com fontes oficiais
+        run: node scripts/update-mural-news.mjs
+
+      - name: Publicar alteracoes no site
+        run: |
+          if git diff --quiet -- index.html; then
+            echo "Sem noticias novas para publicar."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Atualiza mural juridico automaticamente"
+          git push
