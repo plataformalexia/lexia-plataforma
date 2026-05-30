@@ -277,16 +277,88 @@ const coordTempo=[['0-10 min',9],['10-30 min',26],['30-60 min',41],['1h-2h',19],
 const coordDuvidas=[{tema:'Responsabilidade civil',qtd:34,amostra:'Dano moral, nexo causal e responsabilidade objetiva.'},{tema:'Recursos no CPC',qtd:28,amostra:'Cabimento, prazos e diferenças entre apelação e agravo.'},{tema:'Dolo eventual e culpa consciente',qtd:23,amostra:'Critério de assunção do risco em casos práticos.'},{tema:'Controle de constitucionalidade',qtd:19,amostra:'ADI, ADC, ADPF e efeitos das decisões.'},{tema:'Ética na OAB',qtd:16,amostra:'Sigilo, captação de clientela e impedimentos.'}];
 const coordIntervencoes=[{prioridade:'Alta',acao:'Reforço de Processo Civil',motivo:'58% de erro em recursos e tutela provisória',responsavel:'Coordenação pedagógica',prazo:'28/05/2026',status:'Agendada',tone:'red'},{prioridade:'Alta',acao:'Plantão de dúvidas sobre Direito Penal',motivo:'23 dúvidas recorrentes sobre dolo eventual',responsavel:'Mariana Castro',prazo:'29/05/2026',status:'Pendente',tone:'gold'},{prioridade:'Média',acao:'Lista dirigida de Tributário',motivo:'47% de erro em anterioridade e exceções',responsavel:'Bruno Miranda',prazo:'31/05/2026',status:'Em preparo',tone:'purple'},{prioridade:'Média',acao:'Contato com alunos de baixa permanência',motivo:'9% acessaram menos de 10 minutos',responsavel:'Coordenação pedagógica',prazo:'30/05/2026',status:'Em andamento',tone:'blue'}];
 const muralCards=[
-{tone:'urgent',tag:'OAB 47º EOU',title:'Edital publicado em 25/05/2026',date:'Inscrições: 01/06 a 08/06/2026',text:'Próxima janela de inscrição do Exame de Ordem. Prova objetiva prevista para 30/08/2026 e prova prático-profissional para 18/10/2026.',url:'https://examedeordem.oab.org.br/Noticias/Noticia/63705?tituSEO=Confira+o+calend%C3%A1rio+do+Exame+de+Ordem+Unificado+para+2026',source:'Calendário OAB/FGV'},
-{tone:'event',tag:'OAB 46º EOU',title:'2ª fase em 21/06/2026',date:'Atenção para peça e questões discursivas',text:'Para quem fez a 1ª fase do 46º EOU, a prova prático-profissional está no calendário oficial para junho.',url:'https://examedeordem.oab.org.br/Noticias/Noticia/63705?tituSEO=Confira+o+calend%C3%A1rio+do+Exame+de+Ordem+Unificado+para+2026',source:'Calendário OAB/FGV'},
-{tone:'study',tag:'STF',title:'STF: acompanhamento da pauta e julgamentos',date:'29/05/2026',text:'Use a pauta oficial do Supremo para acompanhar julgamentos relevantes e relacionar os temas a controle de constitucionalidade, direitos fundamentais e processo constitucional.',url:'https://portal.stf.jus.br/servicos/julgamentoVirtual/listarResumo.asp',source:'STF'},
-{tone:'study',tag:'Jurisprudência',title:'STJ: Informativo n. 889',date:'19/05/2026',text:'Edição recente do Informativo de Jurisprudência do STJ. Bom material para revisão de teses e leitura dirigida por áreas.',url:'https://processo.stj.jus.br/jurisprudencia/externo/informativo/?acao=pesquisar',source:'STJ'},
-{tone:'study',tag:'Repetitivo',title:'Tema 1.425 no STJ',date:'29/04/2026',text:'Discussão sobre ausência de intérprete para réu surdo-mudo e eventual nulidade processual. Relevante para Processo Penal e Direitos Humanos.',url:'https://www.stj.jus.br/sites/portalp/Paginas/Comunicacao/Noticias/2026/29042026-Repetitivo-discute-se-falta-de-interprete-para-reu-surdo-mudo-e-sem-dominio-de-Libras-gera-nulidade-processual.aspx',source:'STJ Notícias'},
-{tone:'study',tag:'CNJ',title:'CNJ: segurança da IA no Judiciário',date:'27/05/2026',text:'Acompanhe as diretrizes e notícias do Conselho Nacional de Justiça sobre inovação, governança, inteligência artificial e proteção de direitos no sistema de justiça.',url:'https://www.cnj.jus.br/agencia-cnj/noticias/',source:'CNJ'},
-{tone:'study',tag:'Senado',title:'Senado: corregedoria nacional de Justiça',date:'20/05/2026',text:'Notícia legislativa útil para entender a interface entre Senado, sabatina de autoridades e funcionamento institucional do Conselho Nacional de Justiça.',url:'https://www12.senado.leg.br/noticias/materias/2026/05/20/ccj-aprova-benedito-goncalves-para-corregedor-nacional-de-justica',source:'Senado Notícias'},
-{tone:'study',tag:'Câmara',title:'Câmara: prioridade judicial para idosos com deficiência',date:'27/05/2026',text:'Projeto aprovado em comissão trata de prioridade especial na Justiça para pessoas idosas com deficiência. Bom gancho para estudar processo, direitos fundamentais e Estatuto da Pessoa Idosa.',url:'https://www.camara.leg.br/noticias/1277435-comissao-aprova-prioridade-especial-na-justica-para-idosos-com-deficiencia/',source:'Câmara dos Deputados'},
-{tone:'study',tag:'Diário Oficial',title:'DOU: consulta diária a atos oficiais',date:'29/05/2026',text:'Acompanhe diariamente leis, decretos, portarias, editais e atos normativos publicados no Diário Oficial da União para conectar atualidade legislativa às disciplinas jurídicas.',url:'https://www.in.gov.br/leiturajornal',source:'Diário Oficial da União'},
-{tone:'study',tag:'Tribunais superiores',title:'TSE: calendário eleitoral de 2026',date:'15/05/2026',text:'Material oficial do Tribunal Superior Eleitoral para acompanhar prazos do ano eleitoral e revisar Direito Eleitoral, cidadania e organização da Justiça Eleitoral.',url:'https://www.tse.jus.br/eleicoes/calendario-eleitoral/calendario-eleitoral',source:'TSE'}];
+  {
+    "tone": "urgent",
+    "tag": "OAB/FGV",
+    "title": "Confira o edital de abertura do 47º Exame de Ordem Unificado",
+    "date": "29/05/2026",
+    "text": "A Coordenação Nacional do Exame de Ordem Unificado (Coneor) da OAB apresenta, nesta segunda-feira (25/5), o Edital de Abertura do 47º Exame de Ordem Unificado. O período para inscrições vai do dia 1º ao dia 8 de junho.",
+    "url": "https://examedeordem.oab.org.br/Noticias/Noticia/64218?tituSEO=Confira%20o%20edital%20de%20abertura%20do%2047%C2%BA%20Exame%20de%20Ordem%20Unificado",
+    "source": "OAB/FGV"
+  },
+  {
+    "tone": "study",
+    "tag": "STF",
+    "title": "Confira os destaques da pauta de junho do Plenário do STF",
+    "date": "29/05/2026",
+    "text": "Use as notícias e pautas oficiais do Supremo para revisar controle de constitucionalidade, direitos fundamentais e processo constitucional.",
+    "url": "https://noticias.stf.jus.br/postsnoticias/confira-os-destaques-da-pauta-de-junho-do-plenario-do-stf/",
+    "source": "STF"
+  },
+  {
+    "tone": "study",
+    "tag": "STJ",
+    "title": "STJ: notícias e julgados recentes",
+    "date": "29/05/2026",
+    "text": "Acompanhe notícias oficiais do STJ para revisar teses, recursos repetitivos e temas relevantes de direito material e processual.",
+    "url": "https://stj-noticias.stj.jus.br/",
+    "source": "STJ"
+  },
+  {
+    "tone": "study",
+    "tag": "CNJ",
+    "title": "Gestão Documental e Memória",
+    "date": "29/05/2026",
+    "text": "Índice Como se cadastrar Para criar uma sala Notícias Vídeo institucional Boletim Requisitos mínimos Configurações em redes privadas L",
+    "url": "https://www.cnj.jus.br/agencia-cnj/noticias/#",
+    "source": "CNJ"
+  },
+  {
+    "tone": "study",
+    "tag": "Senado",
+    "title": "Dívidas em recorde assombram as famílias brasileiras",
+    "date": "29/05/2026",
+    "text": "Portal de Notícias do Senado Federal: matérias, entrevistas e informações oficiais sobre a atividade legislativa.",
+    "url": "https://www12.senado.leg.br/noticias/infomaterias/2026/05/dividas-em-recorde-assombram-as-familias-brasileiras",
+    "source": "Senado Notícias"
+  },
+  {
+    "tone": "study",
+    "tag": "Câmara",
+    "title": "Câmara pode votar na próxima semana projetos ligados à saúde",
+    "date": "29/05/2026",
+    "text": "Entre as propostas está a que cria política nacional com foco em pessoas com TDAH e outros transtornos de aprendizagem",
+    "url": "https://www.camara.leg.br/noticias/1277881-camara-pode-votar-na-proxima-semana-projetos-ligados-a-saude/",
+    "source": "Câmara dos Deputados"
+  },
+  {
+    "tone": "study",
+    "tag": "Diário Oficial",
+    "title": "DOU: consulta diária a atos oficiais",
+    "date": "29/05/2026",
+    "text": "Consulte o Diário Oficial da União para acompanhar leis, decretos, portarias, editais e atos normativos publicados oficialmente.",
+    "url": "https://www.in.gov.br/leiturajornal",
+    "source": "Diário Oficial da União"
+  },
+  {
+    "tone": "study",
+    "tag": "Tribunais superiores",
+    "title": "Eleições 2026: TSE lança versão digital do Código Eleitoral Anotado e Legislação Complementar",
+    "date": "29/05/2026",
+    "text": "Publicação em PDF permite acesso gratuito, pesquisa rápida e consulta off-line à legislação eleitoral consolidada e anotada",
+    "url": "https://www.tse.jus.br/comunicacao/noticias/2026/Maio/eleicoes-2026-tse-lanca-versao-digital-do-codigo-eleitoral-anotado-e-legislacao-complementar",
+    "source": "TSE"
+  },
+  {
+    "tone": "study",
+    "tag": "Jurisprudência",
+    "title": "Informativos de jurisprudência: leitura dirigida",
+    "date": "29/05/2026",
+    "text": "Use os informativos oficiais como material de revisão, conectando teses recentes a flashcards, questões comentadas e simulados.",
+    "url": "https://processo.stj.jus.br/jurisprudencia/externo/informativo/?acao=pesquisar",
+    "source": "Informativos STJ"
+  }
+];
 const muralCardsEssenciais=muralCards.map(m=>({...m}));
 const muralAgenda=[['25','Mai','Edital de abertura do 47º Exame de Ordem Unificado'],['01','Jun','Início das inscrições do 47º EOU'],['08','Jun','Fim das inscrições do 47º EOU'],['21','Jun','2ª fase do 46º EOU'],['30','Ago','1ª fase do 47º EOU'],['18','Out','2ª fase do 47º EOU']];
 const icons={home:'<svg viewBox="0 0 24 24" fill="none" stroke="#8fb8e8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M9 20v-6h6v6"/></svg>',news:'<svg viewBox="0 0 24 24" fill="none" stroke="#8fb8e8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19a2 2 0 0 0 2 2h13a1 1 0 0 0 1-1V5a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v14z"/><path d="M8 7h8M8 11h8M8 15h5"/></svg>',book:'<svg viewBox="0 0 24 24" fill="none" stroke="#8fb8e8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M4 4v15.5"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>',cards:'<svg viewBox="0 0 24 24" fill="none" stroke="#8fb8e8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="5" width="13" height="16" rx="2"/><path d="M4 17V5a2 2 0 0 1 2-2h10"/></svg>',list:'<svg viewBox="0 0 24 24" fill="none" stroke="#8fb8e8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13"/><path d="M3 6h.01M3 12h.01M3 18h.01"/></svg>',cap:'<svg viewBox="0 0 24 24" fill="none" stroke="#8fb8e8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10L12 5 2 10l10 5 10-5z"/><path d="M6 12v5c3 2 9 2 12 0v-5"/></svg>',doc:'<svg viewBox="0 0 24 24" fill="none" stroke="#8fb8e8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h6"/></svg>',search:'<svg viewBox="0 0 24 24" fill="none" stroke="#8fb8e8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>',spark:'<svg viewBox="0 0 24 24" fill="none" stroke="#8fb8e8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8L19 15z"/></svg>',user:'<svg viewBox="0 0 24 24" fill="none" stroke="#8fb8e8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="7" r="4"/></svg>',award:'<svg viewBox="0 0 24 24" fill="none" stroke="#8fb8e8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M8.5 13.5L7 22l5-3 5 3-1.5-8.5"/></svg>',chart:'<svg viewBox="0 0 24 24" fill="none" stroke="#8fb8e8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="5"/><rect x="12" y="8" width="3" height="9"/><rect x="17" y="5" width="3" height="12"/></svg>',users:'<svg viewBox="0 0 24 24" fill="none" stroke="#8fb8e8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9"/><path d="M16 3.1a4 4 0 0 1 0 7.8"/></svg>',logout:'<svg viewBox="0 0 24 24" fill="none" stroke="#8fb8e8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>'};
